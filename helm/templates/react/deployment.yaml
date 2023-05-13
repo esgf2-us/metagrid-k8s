@@ -23,9 +23,9 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: react
     spec:
-      {{- with .Values.react.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range $name, $_ := .Values.imagePullSecrets }}
+      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.react.podSecurityContext | nindent 8 }}
@@ -42,7 +42,7 @@ spec:
             {{- end }}
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: {{ .Values.react.service.port }}
               protocol: TCP
           livenessProbe:
             httpGet:

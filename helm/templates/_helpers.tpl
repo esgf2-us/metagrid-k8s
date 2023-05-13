@@ -96,7 +96,11 @@ postgres://{{ include "metagrid.pg_user" $ }}:{{ include "metagrid.pg_pass" $ }}
 Keycloak URL
 */}}
 {{- define "metagrid.keycloak_url" -}}
-{{ include "common.names.fullname" .Subcharts.keycloak }}.{{ .Release.Namespace }}.svc.{{ .Subcharts.keycloak.Values.clusterDomain }}:{{ coalesce .Subcharts.keycloak.Values.service.ports.http .Subcharts.keycloak.Values.service.port }}
+  {{- if .Values.keycloak.external -}}
+    {{- .Values.keycloak.url -}}
+  {{- else -}}
+    {{- include "common.names.fullname" .Subcharts.keycloak }}.{{ .Release.Namespace }}.svc.{{ .Subcharts.keycloak.Values.clusterDomain }}:{{ coalesce .Subcharts.keycloak.Values.service.ports.http .Subcharts.keycloak.Values.service.port }}
+  {{- end -}}
 {{- end }}
 
 {{/*

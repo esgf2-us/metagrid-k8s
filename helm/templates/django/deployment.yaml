@@ -23,9 +23,9 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: django
     spec:
-      {{- with .Values.django.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range $name, $_ := .Values.imagePullSecrets }}
+      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
@@ -52,11 +52,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: http
           readinessProbe:
             httpGet:
-              path: /readiness
+              path: /
               port: http
           resources:
             {{- toYaml .Values.django.resources | nindent 12 }}

@@ -4,6 +4,14 @@
 ingress:
   host:
 
+keycloak:
+  external: "true"
+  # Only used if keycloak.external is true
+  url:
+  realm:
+  client_id:
+  client_secret:
+
 django:
 
   replicaCount: 1
@@ -19,25 +27,27 @@ django:
 
   migrateJob:
     enabled: true
-
+  admin_url: '{{ .Values.ingress.host }}'
+  domain_name: '{{ .Values.ingress.host }}'
+  secret_key:
   env:
     CORS_ORIGIN_WHITELIST: ""
-    DJANGO_ADMIN_URL: ""
+    DJANGO_ADMIN_URL: '{{ .Values.django.admin_url }}'
     DJANGO_ALLOWED_HOSTS: ""
     DJANGO_SECRET_KEY: ""
     DJANGO_SECURE_SSL_REDIRECT: "False"
     DJANGO_SETTINGS_MODULE: config.settings.production
-    DOMAIN_NAME: ""
+    DJANGO_SECRET_KEY: '{{.Values.django.secret_key}}'
+    DOMAIN_NAME: '{{ .Values.django.domain_name }}'
     DOMAIN_SUBDIRECTORY: ""
-    KEYCLOAK_CLIENT_ID: ""
-    KEYCLOAK_REALM: ""
+    KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
+    KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
     KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
     DATABASE_URL: '{{ include "metagrid.pg_uri" $ }}'
-    # POSTGRES_HOST: '{{ include "metagrid.pg_host" $ }}'
-    # POSTGRES_PORT: '{{ include "metagrid.pg_port" $ }}'
-    # POSTGRES_DB: '{{ include "metagrid.pg_db" $ }}'
-    # POSTGRES_USER: '{{ include "metagrid.pg_user" $ }}'
-    # POSTGRES_PASSWORD: '{{ include "metagrid.pg_pass" $ }}'
+    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
+    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
+    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
+    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
   podAnnotations: {}
 
@@ -112,14 +122,13 @@ react:
   fullnameOverride: ""
 
   env:
-    REACT_APP_METAGRID_API_URL: http://{{ (index .Values.react.ingress.hosts 0).host }}
-    REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/wget
-    REACT_APP_ESGF_NODE_URL: esg-search/search
+    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
+    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
+    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
-    REACT_APP_KEYCLOAK_REALM: esgf
-    REACT_APP_KEYCLOAK_URL: https://login.esgf.io/
-    REACT_APP_KEYCLOAK_CLIENT_ID: frontend
-    GENERATE_SOURCEMAP: 'false'
+    REACT_APP_KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
+    REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
+    REACT_APP_KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
 
   podAnnotations: {}
 
@@ -136,7 +145,7 @@ react:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
 
   ingress:
     enabled: true
