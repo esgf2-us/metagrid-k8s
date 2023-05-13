@@ -1,0 +1,3 @@
+[submodule "metagrid"]
+	path = metagrid
+	url = https://github.com/aims-group/metagrid.git

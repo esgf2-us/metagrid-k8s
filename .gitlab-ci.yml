@@ -1,0 +1,47 @@
+include:
+- project: does/public/ci-templates
+  file: default.yml
+
+variables:
+  HELM_VALUES: >-
+    --set django.env.DJANGO_ADMIN_URL=esgf-node.ccs.ornl.gov
+    --set django.env.DOMAIN_NAME=esgf-node.ccs.ornl.gov
+    --set django.env.KEYCLOAK_URL=https://login.esgf.io/
+    --set django.env.KEYCLOAK_REALM=esgf
+    --set django.env.KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+    --set django.env.DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+    --set django.env.DJANGO_DEBUG="True"
+    --set django.env.REACT_APP_ESGF_NODE_URL=https://esgf-node.ornl.gov/esg-search/search
+    --set django.env.REACT_APP_WGET_API_URL=https://esgf-node.ornl.gov/esg-search/wget
+    --set django.env.REACT_APP_ESGF_NODE_STATUS_URL=https://aims2.llnl.gov/metagrid-backend/proxy/status
+
+    --set react.env.REACT_APP_METAGRID_API_URL=https://esgf-node.ornl.gov
+    --set react.env.REACT_APP_WGET_API_URL=https://esgf-node.ornl.gov/esg-search/wget
+    --set react.env.REACT_APP_ESGF_NODE_URL=https://esgf-node.ornl.gov/esg-search/search
+    --set react.env.REACT_APP_ESGF_NODE_STATUS_URL=https://aims2.llnl.gov/metagrid-backend/proxy/status
+    --set react.env.REACT_APP_KEYCLOAK_REALM=esgf
+    --set react.env.REACT_APP_KEYCLOAK_URL=https://login.esgf.io/
+    --set react.env.REACT_APP_KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+    --set react.env.GENERATE_SOURCEMAP='false'
+
+    --set react.ingress.enabled=true
+    --set react.ingress.annotations."ccs\.ornl\.gov\/requireAuth=2false"
+    --set react.ingress.annotations."route.openshift.io\/termination=edge"
+    --set react.ingress.labels."ccs\.ornl\.gov\externalRoute=true"
+
+    --set postgresql.postgresql.podSecurityContext.enabled=false
+    --set postgresql.postgresql.containerSecurityContext.enabled=false
+    --set postgresql.postgresql.password=${POSTGRES_PASSWORD}
+    --set postgresql.postgresql.repmgrPassword=${POSTGRES_PASSWORD}
+
+    --set postgresql.pgpool.podSecurityContext.enabled=false
+    --set postgresql.pgpool.containerSecurityContext.enabled=false
+    --set postgresql.pgpool.adminPassword=${PGPOOL_ADMIN_PASSWORD}
+
+.Container Matrix:
+- DOCKERFILE: Django.dockerfile
+  CONTEXT: metagrid/backend
+  IMAGE_URL: $IMAGE_REGISTRY/django:$IMAGE_TAG
+- DOCKERFILE: React.dockerfile
+  CONTEXT: metagrid/frontend
+  IMAGE_URL: $IMAGE_REGISTRY/react:$IMAGE_TAG
