@@ -96,22 +96,16 @@ postgres://{{ include "metagrid.pg_user" $ }}:{{ include "metagrid.pg_pass" $ }}
 Keycloak URL
 */}}
 {{- define "metagrid.keycloak_url" -}}
-{{ include "common.names.fullname" .Subcharts.keycloak }}.{{ .Release.Namespace }}.svc.{{ .Subcharts.keycloak.Values.clusterDomain }}:{{ coalesce .Subcharts.keycloak.Values.service.ports.http .Subcharts.keycloak.Values.service.port }}
+  {{- if .Values.keycloak.external -}}
+    {{- .Values.keycloak.url -}}
+  {{- else -}}
+    {{- include "common.names.fullname" .Subcharts.keycloak }}.{{ .Release.Namespace }}.svc.{{ .Subcharts.keycloak.Values.clusterDomain }}:{{ coalesce .Subcharts.keycloak.Values.service.ports.http .Subcharts.keycloak.Values.service.port }}
+  {{- end -}}
 {{- end }}
 
 {{/*
 Django ALLOWED_HOSTS
 */}}
 {{- define "metagrid.django_allowed_hosts" -}}
-{{- $hosts := list "$(THIS_POD_IP)" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) -}}
-{{- range .Values.django.ingress.hosts -}}
-  {{- $hosts = append $hosts .host -}}
-{{- end -}}
-{{- range .Values.react.ingress.hosts -}}
-  {{- $hosts = append $hosts .host -}}
-{{- end -}}
-{{- range (split "," .Values.django.env.DJANGO_ALLOWED_HOSTS) -}}
-  {{- $hosts = append $hosts . -}}
-{{- end -}}
-{{- join "," $hosts -}}
+{{- join "," (list "$(THIS_POD_IP)" "localhost" .Values.ingress.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
 {{- end }}

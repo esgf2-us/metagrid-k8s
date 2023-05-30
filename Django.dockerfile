@@ -17,15 +17,22 @@ RUN addgroup --system django \
     && adduser --system --ingroup django django
 
 # Requirements are installed here to ensure they will be cached.
-COPY ./metagrid/backend/requirements/requirements /requirements
-RUN pip install --no-cache-dir -r /requirements/production.txt django-extensions==3.1.5 \
-    && rm -rf /requirements
+COPY requirements /requirements
+RUN pip install --no-cache-dir -r /requirements/production.txt django-extensions==3.1.5 cyclonedx-bom
 
 COPY --chown=django:django . /app
 
 USER django
 
-RUN python /app/manage.py collectstatic --noinput
+# These env vars must be set so that collectstatic can run, but it doesn't actually use it
+RUN DATABASE_URL=postgresql://localhost:5432 \
+    KEYCLOAK_URL='' \
+    KEYCLOAK_REALM='' \
+    KEYCLOAK_CLIENT_ID='' \
+    CORS_ORIGIN_WHITELIST='' \
+    python /app/manage.py collectstatic --noinput \
+    && mkdir -p /app/staticfiles/.well-known \
+    && cyclonedx-py --requirements --in-file requirements/production.txt --purl-bom-ref --format json --output /app/staticfiles/.well-known/bom
 
 WORKDIR /app
 

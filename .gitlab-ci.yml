@@ -3,31 +3,28 @@ include:
   file: default.yml
 
 variables:
-  HELM_VALUES: >-
-    --set django.env.DJANGO_ADMIN_URL=esgf-node.ccs.ornl.gov
-    --set django.env.DOMAIN_NAME=esgf-node.ccs.ornl.gov
-    --set django.env.KEYCLOAK_URL=https://login.esgf.io/
-    --set django.env.KEYCLOAK_REALM=esgf
-    --set django.env.KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+  PROJECT_SLUG: esgf-metagrid-k8s
+  HELM_EXTRA_ARGS: >-
+    --kube-apiserver=https://api.onyx.ccs.ornl.gov:443
+    --kube-token=$CLI137_RUNNER_TOKEN
+
+    --set keycloak.url=https://login.esgf.io/
+
+    --set django.image.repository=$IMAGE_REGISTRY/django
+    --set django.image.tag=$IMAGE_TAG
     --set django.env.DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
     --set django.env.DJANGO_DEBUG="True"
-    --set django.env.REACT_APP_ESGF_NODE_URL=https://esgf-node.ornl.gov/esg-search/search
-    --set django.env.REACT_APP_WGET_API_URL=https://esgf-node.ornl.gov/esg-search/wget
-    --set django.env.REACT_APP_ESGF_NODE_STATUS_URL=https://aims2.llnl.gov/metagrid-backend/proxy/status
+    --set django.env.REACT_APP_WGET_API_URL=https://greyworm1-rh7.llnl.gov/wget
 
-    --set react.env.REACT_APP_METAGRID_API_URL=https://esgf-node.ornl.gov
-    --set react.env.REACT_APP_WGET_API_URL=https://esgf-node.ornl.gov/esg-search/wget
-    --set react.env.REACT_APP_ESGF_NODE_URL=https://esgf-node.ornl.gov/esg-search/search
+    --set react.image.repository=$IMAGE_REGISTRY/react
+    --set react.image.tag=$IMAGE_TAG
+    --set react.env.REACT_APP_WGET_API_URL=https://greyworm1-rh7.llnl.gov/wget
     --set react.env.REACT_APP_ESGF_NODE_STATUS_URL=https://aims2.llnl.gov/metagrid-backend/proxy/status
-    --set react.env.REACT_APP_KEYCLOAK_REALM=esgf
-    --set react.env.REACT_APP_KEYCLOAK_URL=https://login.esgf.io/
-    --set react.env.REACT_APP_KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
-    --set react.env.GENERATE_SOURCEMAP='false'
 
-    --set react.ingress.enabled=true
-    --set react.ingress.annotations."ccs\.ornl\.gov\/requireAuth=2false"
-    --set react.ingress.annotations."route.openshift.io\/termination=edge"
-    --set react.ingress.labels."ccs\.ornl\.gov\externalRoute=true"
+    --set-string react.ingress.enabled=true
+    --set-string react.ingress.annotations.ccs\.ornl\.gov\/requireAuth=false
+    --set-string react.ingress.annotations.route\.openshift\.io\/termination=edge
+    --set-string react.ingress.labels.ccs\.ornl\.gov\/externalRoute=true
 
     --set postgresql.postgresql.podSecurityContext.enabled=false
     --set postgresql.postgresql.containerSecurityContext.enabled=false
@@ -38,10 +35,81 @@ variables:
     --set postgresql.pgpool.containerSecurityContext.enabled=false
     --set postgresql.pgpool.adminPassword=${PGPOOL_ADMIN_PASSWORD}
 
+workflow:
+  name: "$PIPELINE_TYPE $CI_COMMIT_BRANCH"
+  rules:
+  - if: $FORCE_REVIEW_RUN == "true" || $CI_MERGE_REQUEST_IID || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+    variables:
+      RUNNER_TAG: mariner
+      CI_ENVIRONMENT_URL: "$CI_BUILD_REF_SLUG-$PROJECT_SLUG.mariner-cluster.ornl.gov"
+      ENVIRONMENT_NAME: Review/$CI_BUILD_REF_SLUG
+      NAMESPACE: "$PROJECT_SLUG-review"
+      RELEASENAME: "$PROJECT_SLUG-$CI_BUILD_REF_SLUG"
+      HELM_CHANNEL: dev
+      PIPELINE_TYPE: review
+  - if: $FORCE_PRODUCTION_RUN == "true" || ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH)
+    variables:
+      RUNNER_TAG: shellback
+      CI_ENVIRONMENT_URL: "esgf-node.ornl.gov"
+      ENVIRONMENT_NAME: Production
+      NAMESPACE: "cli137"
+      RELEASENAME: "$PROJECT_SLUG"
+      HELM_CHANNEL: stable
+      PIPELINE_TYPE: production
+      # HELM_EXTRA_ARGS: >-
+      #   --kube-apiserver=https://api.onyx.ccs.ornl.gov:443
+      #   --kube-token=$CLI137_RUNNER_TOKEN
+
 .Container Matrix:
 - DOCKERFILE: Django.dockerfile
-  CONTEXT: metagrid/backend
+  CONTEXT: metagrid-upstream/backend
   IMAGE_URL: $IMAGE_REGISTRY/django:$IMAGE_TAG
+  KUBERNETES_MEMORY_REQUEST: 2G
+  KUBERNETES_MEMORY_LIMIT: 2G
+
 - DOCKERFILE: React.dockerfile
-  CONTEXT: metagrid/frontend
+  CONTEXT: metagrid-upstream/frontend
   IMAGE_URL: $IMAGE_REGISTRY/react:$IMAGE_TAG
+
+Build Images:
+  tags:
+  - $RUNNER_TAG
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+
+NPM Build:
+  image: node:16
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    NODE_OPTIONS: --max-old-space-size=1024
+    KUBERNETES_MEMORY_LIMIT: 3G
+    KUBERNETES_MEMORY_REQUEST: 2G
+  rules:
+  - when: on_success
+  artifacts:
+    paths:
+    - metagrid-upstream/frontend/build
+  script:
+  - cd metagrid-upstream/frontend
+  - mv .envs/.react .envs/.prod.env
+  - yarn install --frozen-lock-file
+  - yarn build:production
+
+Build Chart:
+  variables:
+    KUBERNETES_MEMORY_REQUEST: 512M
+    KUBERNETES_MEMORY_LIMIT: 512M
+
+Deploy Environment:
+  variables:
+    KUBERNETES_MEMORY_LIMIT: 512M
+    KUBERNETES_MEMORY_REQUEST: 512M
+  before_script:
+  - >-
+    kubectl delete secret
+    --ignore-not-found
+    --namespace $NAMESPACE
+    --selector $RELEASENAME
+    --selector 'status in (pending-install, pending-upgrade, failed)'
+    --server https://api.onyx.ccs.ornl.gov:443
+    --token $CLI137_RUNNER_TOKEN

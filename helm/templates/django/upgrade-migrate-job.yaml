@@ -20,9 +20,9 @@ spec:
   backoffLimit: 0
   template:
     spec:
-      {{- with .Values.django.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range $name, $_ := .Values.imagePullSecrets }}
+      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.django.podSecurityContext | nindent 8 }}

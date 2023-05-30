@@ -23,9 +23,9 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: django
     spec:
-      {{- with .Values.django.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range $name, $_ := .Values.imagePullSecrets }}
+      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
@@ -47,17 +47,17 @@ spec:
             - name: DJANGO_ALLOWED_HOSTS
               value: '{{ include "metagrid.django_allowed_hosts" $ }}'
           ports:
-            - name: http
-              containerPort: 5000
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /readiness
-              port: http
+          - name: http
+            containerPort: 5000
+            protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           resources:
             {{- toYaml .Values.django.resources | nindent 12 }}
       {{- with .Values.django.nodeSelector }}
