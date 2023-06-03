@@ -64,18 +64,14 @@ workflow:
 - DOCKERFILE: Django.dockerfile
   CONTEXT: metagrid-upstream/backend
   IMAGE_URL: $IMAGE_REGISTRY/django:$IMAGE_TAG
+  GIT_SUBMODULE_STRATEGY: recursive
   KUBERNETES_MEMORY_REQUEST: 2G
   KUBERNETES_MEMORY_LIMIT: 2G
 
 - DOCKERFILE: React.dockerfile
   CONTEXT: metagrid-upstream/frontend
   IMAGE_URL: $IMAGE_REGISTRY/react:$IMAGE_TAG
-
-Build Images:
-  tags:
-  - $RUNNER_TAG
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_STRATEGY: none
 
 NPM Build:
   image: node:16

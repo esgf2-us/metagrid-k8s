@@ -4,6 +4,12 @@
 ingress:
   enabled: true
   host:
+  annotations:
+    route.openshift.io/termination: edge
+    ccs.ornl.gov/requireAuth: "false"
+
+  labels:
+    ccs.ornl.gov/externalRoute: "true"
 
 keycloak:
   external: "true"
@@ -90,7 +96,7 @@ django:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
 
 react:
 
