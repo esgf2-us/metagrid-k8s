@@ -69,7 +69,7 @@ workflow:
   KUBERNETES_MEMORY_LIMIT: 2G
 
 - DOCKERFILE: React.dockerfile
-  CONTEXT: metagrid-upstream/frontend
+  CONTEXT: $CI_PROJECT_DIR
   IMAGE_URL: $IMAGE_REGISTRY/react:$IMAGE_TAG
   GIT_SUBMODULE_STRATEGY: none
 
@@ -109,3 +109,8 @@ Deploy Environment:
     --selector 'status in (pending-install, pending-upgrade, failed)'
     --server https://api.onyx.ccs.ornl.gov:443
     --token $CLI137_RUNNER_TOKEN
+
+Parse Sitemap:
+  script:
+  - echo "https://${CI_ENVIRONMENT_URL}/" >> $URL_LIST_FILE
+  - echo "https://${CI_ENVIRONMENT_URL}/search" >> $URL_LIST_FILE
