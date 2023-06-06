@@ -41,7 +41,6 @@ django:
     CORS_ORIGIN_WHITELIST: ""
     DJANGO_ADMIN_URL: '{{ .Values.django.admin_url }}'
     DJANGO_ALLOWED_HOSTS: ""
-    DJANGO_SECRET_KEY: ""
     DJANGO_SECURE_SSL_REDIRECT: "False"
     DJANGO_SETTINGS_MODULE: config.settings.production
     DJANGO_SECRET_KEY: '{{.Values.django.secret_key}}'
