@@ -30,6 +30,9 @@ RUN DATABASE_URL=postgresql://localhost:5432 \
     KEYCLOAK_REALM='' \
     KEYCLOAK_CLIENT_ID='' \
     CORS_ORIGIN_WHITELIST='' \
+    REACT_APP_ESGF_NODE_URL='' \
+    REACT_APP_WGET_API_URL='' \
+    REACT_APP_ESGF_NODE_STATUS_URL='' \
     python /app/manage.py collectstatic --noinput \
     && mkdir -p /app/staticfiles/.well-known \
     && cyclonedx-py --requirements --in-file requirements/production.txt --purl-bom-ref --format json --output /app/staticfiles/.well-known/bom
