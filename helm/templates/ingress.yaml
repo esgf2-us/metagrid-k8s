@@ -69,4 +69,12 @@ spec:
                 name: {{ $fullName }}-django
                 port:
                   number: {{ .Values.django.service.port }}
+          # temporary workaround for hardcoded bug upstream
+          - path: /metagrid-backend
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}-django
+                port:
+                  number: {{ .Values.django.service.port }}
 {{- end }}

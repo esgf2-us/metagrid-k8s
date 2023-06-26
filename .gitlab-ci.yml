@@ -98,7 +98,7 @@ NPM Build:
     # Create React App apps can't read runtime variables, they have to
     # be baked in at build time
     echo "REACT_APP_METAGRID_API_URL=https://$CI_ENVIRONMENT_URL" >> .envs/.prod.env
-    echo "REACT_APP_WGET_API_URL=https://greyworm1-rh7.llnl.gov/wget" >> .envs/.prod.env
+    echo "REACT_APP_WGET_API_URL=https://$CI_ENVIRONMENT_URL/esg-search/wget" >> .envs/.prod.env
     echo "REACT_APP_ESGF_NODE_URL=https://$CI_ENVIRONMENT_URL/esg-search/search" >> .envs/.prod.env
     echo "REACT_APP_SEARCH_URL=https://$CI_ENVIRONMENT_URL/esg-search/search" >> .envs/.prod.env
     echo "REACT_APP_ESGF_NODE_STATUS_URL=https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D" >> .envs/.prod.env
@@ -106,14 +106,6 @@ NPM Build:
     echo "REACT_APP_KEYCLOAK_URL=https://login.esgf.io/" >> .envs/.prod.env
     echo "REACT_APP_KEYCLOAK_CLIENT_ID=esgf-node-ornl-gov" >> .envs/.prod.env
     echo "GENERATE_SOURCEMAP=false" >> .envs/.prod.env
-
-    # export REACT_APP_METAGRID_API_URL=https://$CI_ENVIRONMENT_URL
-    # export REACT_APP_WGET_API_URL=https://greyworm1-rh7.llnl.gov/wget
-    # export REACT_APP_ESGF_NODE_URL=https://$CI_ENVIRONMENT_URL/esg-search/search
-    # export REACT_APP_ESGF_NODE_STATUS_URL=https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
-    # export REACT_APP_KEYCLOAK_REALM=esgf
-    # export REACT_APP_KEYCLOAK_CLIENT_ID=esgf-node-ornl-gov
-    # export GENERATE_SOURCEMAP=false
     
     yarn install --frozen-lock-file
     yarn build:production
