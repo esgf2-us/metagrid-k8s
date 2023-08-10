@@ -35,8 +35,19 @@ spec:
             {{- toYaml .Values.react.securityContext | nindent 12 }}
           image: "{{ .Values.react.image.repository }}:{{ .Values.react.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.react.image.pullPolicy }}
+          envFrom:
+          {{- range (default dict .Values.react.envFrom) }}
+          {{- if eq .type "configmap" }}
+          - configMapRef:
+          {{- else if eq .type "secret" }}
+          - secretRef:
+          {{- else }}
+          {{ fail printf "Failed to include envFrom with type %s" .type }}
+          {{- end }}
+              name: {{ printf "%s-%s" (include "metagrid.fullname" $) .name }}
+          {{- end }}
           env:
-            {{- range $key, $value := .Values.react.env }}
+            {{- range $key, $value := (default dict .Values.react.env) }}
             - name: {{ tpl $key $ }}
               value: {{ tpl $value $ | quote }}
             {{- end }}

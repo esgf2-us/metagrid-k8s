@@ -33,8 +33,17 @@ spec:
           image: "{{ .Values.django.image.repository }}:{{ .Values.django.image.tag }}"
           imagePullPolicy: {{ .Values.django.image.pullPolicy }}
           command: ["python",  "manage.py", "migrate", "--settings=$(DJANGO_SETTINGS_MODULE)"]
+          envFrom:
+          {{- range (default dict .Values.django.envFrom) }}
+          {{- if eq .type "configmap" }}
+          - configMapRef:
+          {{- else if eq .type "secret" }}
+          - secretRef:
+          {{- end }}
+              name: {{ printf "%s-%s" (include "metagrid.fullname" $) .name }}
+          {{- end }}
           env:
-            {{- range $key, $value := omit .Values.django.env "DJANGO_ALLOWED_HOSTS" }}
+            {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
             - name: {{ tpl $key $ }}
               value: {{ tpl $value $ | quote }}
             {{- end }}
