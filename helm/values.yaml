@@ -11,6 +11,34 @@ ingress:
   labels:
     ccs.ornl.gov/externalRoute: "true"
 
+configmap:
+  django:
+    CORS_ORIGIN_WHITELIST: ""
+    DJANGO_ADMIN_URL: '{{ .Values.django.admin_url }}'
+    DJANGO_ALLOWED_HOSTS: ""
+    DJANGO_SECURE_SSL_REDIRECT: "False"
+    DJANGO_SETTINGS_MODULE: config.settings.production
+    DJANGO_SECRET_KEY: '{{.Values.django.secret_key}}'
+    DOMAIN_NAME: '{{ .Values.django.domain_name }}'
+    DOMAIN_SUBDIRECTORY: ""
+    KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
+    KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
+    KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
+    DATABASE_URL: '{{ include "metagrid.pg_uri" $ }}'
+    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
+    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
+    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
+    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
+
+  react:
+    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
+    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
+    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
+    REACT_APP_ESGF_NODE_STATUS_URL: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
+    REACT_APP_KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
+    REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
+    REACT_APP_KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
+
 keycloak:
   external: "true"
   # Only used if keycloak.external is true
@@ -37,23 +65,9 @@ django:
   admin_url: '{{ .Values.ingress.host }}'
   domain_name: '{{ .Values.ingress.host }}'
   secret_key:
-  env:
-    CORS_ORIGIN_WHITELIST: ""
-    DJANGO_ADMIN_URL: '{{ .Values.django.admin_url }}'
-    DJANGO_ALLOWED_HOSTS: ""
-    DJANGO_SECURE_SSL_REDIRECT: "False"
-    DJANGO_SETTINGS_MODULE: config.settings.production
-    DJANGO_SECRET_KEY: '{{.Values.django.secret_key}}'
-    DOMAIN_NAME: '{{ .Values.django.domain_name }}'
-    DOMAIN_SUBDIRECTORY: ""
-    KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
-    KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
-    KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
-    DATABASE_URL: '{{ include "metagrid.pg_uri" $ }}'
-    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
-    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
-    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
-    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
+  envFrom:
+    - name: django
+      type: configmap
 
   podAnnotations: {}
 
@@ -111,14 +125,9 @@ react:
   nameOverride: ""
   fullnameOverride: ""
 
-  env:
-    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
-    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
-    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
-    REACT_APP_ESGF_NODE_STATUS_URL: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
-    REACT_APP_KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
-    REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
-    REACT_APP_KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
+  envFrom:
+  - type: configmap
+    name: react
 
   podAnnotations: {}
 
@@ -161,6 +170,9 @@ react:
   service:
     type: ClusterIP
     port: 8080
+
+  monitoring:
+    enabled: false
 
 postgresql:
   enabled: true

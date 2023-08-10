@@ -1,0 +1,11 @@
+{{- range $k, $v := .Values.configmap }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-%s" (include "metagrid.fullname" $) $k }}
+data:
+{{- range $x, $y := $v -}}
+{{ (printf "%s: %s" $x (tpl $y $ | quote)) | nindent 2 }}
+{{- end }}
+{{- end }}
