@@ -1,8 +1,12 @@
-django:
+  ingress:
+    enabled: true
+    className: traefik
+    host: nimbus6.llnl.gov
 
+django:
   image:
-    repository:
-    tag: 
+    repository: https://ghcr.io/esgf-nimbus/metagrid-django
+    tag: 0.1.0
 
   env:
     DJANGO_ADMIN_URL: TG_-ztsXwL7NOx6cTqZ_bjINGF_R1VuOTI8FocOfAfs
@@ -18,19 +22,10 @@ django:
     REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/wget
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
-  ingress:
-    enabled: true
-    hosts:
-    - host: nimbus6.llnl.gov
-      paths:
-      - path: /
-        pathType: ImplementationSpecific
-
 react:
-
   image:
-    repository:
-    tag: 
+    repository: https://ghcr.io/esgf-nimbus/metagrid-react
+    tag: 0.1.0
 
   env:
     REACT_APP_METAGRID_API_URL: https://{{ (index .Values.react.ingress.hosts 0).host }}/metagrid-backend
@@ -45,14 +40,6 @@ react:
     REACT_APP_HOTJAR_SV:  6
     GENERATE_SOURCEMAP: 'false'
     PUBLIC_URL: metagrid
-  
-  ingress:
-    enabled: true
-    hosts:
-    - host: nimbus6.llnl.gov
-      paths:
-      - path: /
-        pathType: ImplementationSpecific
 
 postgresql:
   persistence:
@@ -72,4 +59,3 @@ postgresql:
     containerSecurityContext:
       enabled: false
     adminPassword: pgpooladminpass
-
