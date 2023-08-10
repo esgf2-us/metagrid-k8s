@@ -22,7 +22,6 @@ django:
     REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/wget
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
-
 react:
   image:
     repository: https://ghcr.io/esgf-nimbus/metagrid-react
@@ -37,11 +36,11 @@ react:
     REACT_APP_KEYCLOAK_URL: https://login.esgf.io/
     REACT_APP_KEYCLOAK_CLIENT_ID: metagrid-llnl
     REACT_APP_GOOGLE_ANALYTICS_TRACKING_ID: G-515H3RKZYX
-    REACT_APP_HOTJAR_ID: 2079136
-    REACT_APP_HOTJAR_SV:  6
+    REACT_APP_HOTJAR_ID: '2079136'
+    REACT_APP_HOTJAR_SV: '6'
     GENERATE_SOURCEMAP: 'false'
     PUBLIC_URL: metagrid
-  
+
 postgresql:
   persistence:
     enabled: false
@@ -60,4 +59,3 @@ postgresql:
     containerSecurityContext:
       enabled: false
     adminPassword: pgpooladminpass
-
