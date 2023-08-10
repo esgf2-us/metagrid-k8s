@@ -5,16 +5,17 @@ django:
     tag: 
 
   env:
-    DJANGO_ADMIN_URL: nimbus6.llnl.gov
-    DOMAIN_NAME: esgf-.ornl.gov
+    DJANGO_ADMIN_URL: TG_-ztsXwL7NOx6cTqZ_bjINGF_R1VuOTI8FocOfAfs
+    DOMAIN_NAME: nimbus6.llnl.gov
+    PUBLIC_URL: metagrid
     KEYCLOAK_URL: https://login.esgf.io/
     KEYCLOAK_REALM: esgf
     KEYCLOAK_CLIENT_ID: 
     DJANGO_SECRET_KEY: " nn4j8c3zyrjkvl9s2jxcx"
     PYTHONUNBUFFERED: "1"
     DJANGO_DEBUG: "True"
-    REACT_APP_ESGF_NODE_URL: https://esgf-open.apps.onyx.ccs.ornl.gov/esg-search/search
-    REACT_APP_WGET_API_URL: https://esgf-open.apps.onyx.ccs.ornl.gov/esg-search/wget
+    REACT_APP_ESGF_NODE_URL: https://esgf-node.llnl.gov/esg-search/search
+    REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/wget
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
   ingress:
@@ -33,13 +34,17 @@ react:
 
   env:
     REACT_APP_METAGRID_API_URL: https://{{ (index .Values.react.ingress.hosts 0).host }}/metagrid-backend
-    REACT_APP_WGET_API_URL: https://esgf-node.llnl.gov/esg-search/wget
+    REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/esg-search/wget
     REACT_APP_ESGF_NODE_URL: https://esgf-node.llnl.gov/esg-search/search
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
     REACT_APP_KEYCLOAK_REALM: esgf
     REACT_APP_KEYCLOAK_URL: https://login.esgf.io/
     REACT_APP_KEYCLOAK_CLIENT_ID: metagrid-llnl
+    REACT_APP_GOOGLE_ANALYTICS_TRACKING_ID: G-515H3RKZYX
+    REACT_APP_HOTJAR_ID: 2079136
+    REACT_APP_HOTJAR_SV:  6
     GENERATE_SOURCEMAP: 'false'
+    PUBLIC_URL: metagrid
   
   ingress:
     enabled: true
