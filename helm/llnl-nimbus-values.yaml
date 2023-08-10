@@ -1,34 +1,21 @@
-ingress:
-  enabled: true
-  className: traefik
-  host: nimbus6.llnl.gov
-
-django:
-  image:
-    repository: https://ghcr.io/esgf-nimbus/metagrid-django
-    tag: 0.1.0
-
-  env:
+configmap:
+  django:
     DJANGO_ADMIN_URL: TG_-ztsXwL7NOx6cTqZ_bjINGF_R1VuOTI8FocOfAfs
     DOMAIN_NAME: nimbus6.llnl.gov
     PUBLIC_URL: metagrid
     KEYCLOAK_URL: https://login.esgf.io/
     KEYCLOAK_REALM: esgf
-    KEYCLOAK_CLIENT_ID: 
+    KEYCLOAK_CLIENT_ID: "placeholder"
     DJANGO_SECRET_KEY: " nn4j8c3zyrjkvl9s2jxcx"
     PYTHONUNBUFFERED: "1"
     DJANGO_DEBUG: "True"
+    REACT_APP_SEARCH_URL: https://esgf-node.llnl.gov/esg-search/search
     REACT_APP_ESGF_NODE_URL: https://esgf-node.llnl.gov/esg-search/search
     REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/wget
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
-
-react:
-  image:
-    repository: https://ghcr.io/esgf-nimbus/metagrid-react
-    tag: 0.1.0
-
-  env:
-    REACT_APP_METAGRID_API_URL: https://{{ (index .Values.react.ingress.hosts 0).host }}/metagrid-backend
+  react:
+    # don't need the public url, we can use the internal
+    REACT_APP_METAGRID_API_URL: http://{{ include "metagrid.fullname" . }}-django
     REACT_APP_WGET_API_URL: https://greyworm1-rh7.llnl.gov/esg-search/wget
     REACT_APP_ESGF_NODE_URL: https://esgf-node.llnl.gov/esg-search/search
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
@@ -40,6 +27,29 @@ react:
     REACT_APP_HOTJAR_SV: '6'
     GENERATE_SOURCEMAP: 'false'
     PUBLIC_URL: metagrid
+
+ingress:
+  enabled: true
+  className: traefik
+  host: nimbus6.llnl.gov
+
+django:
+  image:
+    repository: ghcr.io/esgf-nimbus/metagrid-django
+    tag: 0.1.0
+
+  envFrom:
+  - name: django
+    type: configmap
+
+react:
+  image:
+    repository: ghcr.io/esgf-nimbus/metagrid-react
+    tag: 0.1.0
+
+  envFrom:
+  - name: react
+    type: configmap
 
 postgresql:
   persistence:
