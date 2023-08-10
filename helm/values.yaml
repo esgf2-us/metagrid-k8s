@@ -24,7 +24,7 @@ django:
   replicaCount: 1
 
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/cli137/django
+    repository: ""
     pullPolicy: Always
     tag: "latest"
 
@@ -102,7 +102,7 @@ react:
   replicaCount: 1
 
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/cli137/react
+    repository: ""
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: latest

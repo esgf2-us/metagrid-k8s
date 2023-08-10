@@ -20,56 +20,13 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: /
+          - path: /metagrid
             pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $fullName }}-react
                 port:
                   number: {{ .Values.react.service.port }}
-          - path: /api
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          - path: /accounts
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          - path: /proxy
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          - path: /account-confirm-email
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          - path: /swagger
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          - path: /redoc
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
-          # temporary workaround for hardcoded bug upstream
           - path: /metagrid-backend
             pathType: ImplementationSpecific
             backend:
