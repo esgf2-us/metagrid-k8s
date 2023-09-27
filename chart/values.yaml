@@ -26,15 +26,15 @@ configmap:
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
   react:
-    REACT_APP_METAGRID_API_URL: "{{ .Values.ingress.host }}"
-    PUBLIC_URL: ""
-    REACT_APP_PREVIOUS_URL: "/metagrid"
+    REACT_APP_METAGRID_API_URL: 'http://{{ include "metagrid.fullname" . }}-django'
+    PUBLIC_URL: "{{ .Values.ingress.frontend.path }}"
+    REACT_APP_PREVIOUS_URL: "{{ .Values.ingress.frontend.path }}"
     REACT_APP_GLOBUS_REDIRECT: ""
     REACT_APP_CLIENT_ID: ""
     REACT_APP_GLOBUS_NODES: ""
-    REACT_APP_WGET_API_URL: "{{ .Values.ingress.host }}/esg-search/wget"
-    REACT_APP_SEARCH_URL: "{{ .Values.ingress.host }}/esg-search/search"
-    REACT_APP_ESGF_NODE_STATUS_URL: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
+    REACT_APP_WGET_API_URL: "https://greyworm1-rh7.llnl.gov/esg-search/wget"
+    REACT_APP_SEARCH_URL: "https://esgf-node.llnl.gov/esg-search/search"
+    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
     REACT_APP_KEYCLOAK_REALM: "{{ .Values.keycloak.realm }}"
     REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
     REACT_APP_KEYCLOAK_CLIENT_ID: "{{ .Values.keycloak.client_id }}"
@@ -172,6 +172,12 @@ ingress:
   host:
   annotations: {}
   labels: {}
+
+  frontend:
+    path: /metagrid
+
+  backend:
+    path: /metagrid-backend
 
 postgresql:
   enabled: true

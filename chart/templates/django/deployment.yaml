@@ -59,14 +59,14 @@ spec:
           - name: http
             containerPort: 5000
             protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.ingress.backend.path }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.ingress.backend.path }}
+              port: http
           resources:
             {{- toYaml .Values.django.resources | nindent 12 }}
       {{- with .Values.django.nodeSelector }}

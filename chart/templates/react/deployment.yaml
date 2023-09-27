@@ -57,11 +57,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.ingress.frontend.path }}
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.ingress.frontend.path }}
               port: http
           resources:
             {{- toYaml .Values.react.resources | nindent 12 }}
