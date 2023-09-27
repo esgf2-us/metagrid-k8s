@@ -7,7 +7,8 @@ metadata:
     app.kubernetes.io/component: react
 data:
   PREVIOUS_URL: {{ .Values.ingress.react.path }}
-  PUBLIC_URL: {{ .Values.ingress.react.path }}
+  # If PUBLIC_URL is "/" then metagrid expects it to be ""
+  PUBLIC_URL: {{ ternary "" .Values.ingress.react.path (eq .Values.ingress.react.path "/") }}
   REACT_APP_METAGRID_API_URL: https://{{ .Values.ingress.host }}{{ .Values.ingress.django.path }}
   REACT_APP_PREVIOUS_URL: {{ .Values.previousURL }}
   {{- with .Values.external.globus }}
@@ -27,6 +28,7 @@ data:
   REACT_APP_HOTJAR_ID: {{ .id }}
   REACT_APP_HOTJAR_SV: {{ .sv }}
   {{- end }}
+  # TODO default metagrid nginx adds location for PREVIOUS_URL and breaks reverse proxy
   default.conf: |
     server {
       listen 3000;
