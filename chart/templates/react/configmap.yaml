@@ -6,6 +6,7 @@ metadata:
     {{- include "metagrid.labels" . | nindent 4 }}
     app.kubernetes.io/component: react
 data:
+  PREVIOUS_URL: {{ .Values.ingress.react.path }}
   PUBLIC_URL: {{ .Values.ingress.react.path }}
   REACT_APP_METAGRID_API_URL: http://{{ include "metagrid.fullname" . }}-django
   REACT_APP_PREVIOUS_URL: {{ .Values.previousURL }}
@@ -26,3 +27,19 @@ data:
   REACT_APP_HOTJAR_ID: {{ .id }}
   REACT_APP_HOTJAR_SV: {{ .sv }}
   {{- end }}
+  default.conf: |
+    server {
+      listen 3000;
+
+      location ^~ {{ .Values.ingress.react.path }} {
+        alias   /usr/share/nginx/html/;
+        index  index.html index.htm;
+        try_files $uri $uri/ {{ .Values.ingress.react.path }}/index.html;
+      }
+
+      error_page   500 502 503 504  /50x.html;
+
+      location = /50x.html {
+        root   /usr/share/nginx/html;
+      }
+    }
