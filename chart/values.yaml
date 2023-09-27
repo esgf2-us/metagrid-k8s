@@ -19,7 +19,7 @@ external:
 django:
   replicaCount: 1
 
-  adminURL: panel
+  adminURL: panel/
   corsOriginWhitelist: ""
   allowedHosts: ""
   secretKey:
