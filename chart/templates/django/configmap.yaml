@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "metagrid.fullname" . }}-django
+  labels:
+    {{- include "metagrid.labels" . | nindent 4 }}
+    app.kubernetes.io/component: django
+data:
+  DJANGO_ADMIN_URL: ""
+  DJANGO_ALLOWED_HOSTS: {{ .Values.django.allowedHosts }}
+  DJANGO_SECURE_SSL_REDIRECT: "False"
+  DJANGO_SETTINGS_MODULE: config.settings.production
+  DJANGO_SECRET_KEY: {{ .Values.django.secretKey }}
+  DOMAIN_NAME: {{ .Values.ingress.host }}
+  DOMAIN_SUBDIRECTORY: ""
+  CORS_ORIGIN_WHITELIST: {{ .Values.django.corsOriginWhitelist }}
+  KEYCLOAK_URL: {{ .Values.external.keycloak.url }}
+  KEYCLOAK_REALM: {{ .Values.external.keycloak.realm }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.external.keycloak.clientID }}
+  DATABASE_URL: {{ include "metagrid.pg_uri" . }}
+  REACT_APP_WGET_API_URL: {{ .Values.external.wget }}
+  REACT_APP_SEARCH_URL: {{ .Values.external.search }}
+  REACT_APP_ESGF_NODE_STATUS_URL: {{ .Values.external.nodeStatus }}
+  REACT_APP_ESGF_SOLR: {{ .Values.external.solr }}

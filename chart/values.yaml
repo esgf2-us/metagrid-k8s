@@ -1,48 +1,28 @@
-keycloak:
-  external: "true"
-  # Only used if keycloak.external is true
-  url:
-  realm:
-  client_id:
-  client_secret:
+previousURL:
 
-configmap:
-  django:
-    CORS_ORIGIN_WHITELIST: ""
-    DJANGO_ADMIN_URL: '{{ .Values.django.admin_url }}'
-    DJANGO_ALLOWED_HOSTS: ""
-    DJANGO_SECURE_SSL_REDIRECT: "False"
-    DJANGO_SETTINGS_MODULE: config.settings.production
-    DJANGO_SECRET_KEY: '{{.Values.django.secret_key}}'
-    DOMAIN_NAME: '{{ .Values.django.domain_name }}'
-    DOMAIN_SUBDIRECTORY: ""
-    KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
-    KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
-    KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
-    DATABASE_URL: '{{ include "metagrid.pg_uri" $ }}'
-    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
-    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
-    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
-    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
-
-  react:
-    REACT_APP_METAGRID_API_URL: 'http://{{ include "metagrid.fullname" . }}-django'
-    PUBLIC_URL: "{{ .Values.ingress.frontend.path }}"
-    REACT_APP_PREVIOUS_URL: "{{ .Values.ingress.frontend.path }}"
-    REACT_APP_GLOBUS_REDIRECT: ""
-    REACT_APP_CLIENT_ID: ""
-    REACT_APP_GLOBUS_NODES: ""
-    REACT_APP_WGET_API_URL: "https://greyworm1-rh7.llnl.gov/esg-search/wget"
-    REACT_APP_SEARCH_URL: "https://esgf-node.llnl.gov/esg-search/search"
-    REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
-    REACT_APP_KEYCLOAK_REALM: "{{ .Values.keycloak.realm }}"
-    REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
-    REACT_APP_KEYCLOAK_CLIENT_ID: "{{ .Values.keycloak.client_id }}"
-    REACT_APP_HOTJAR_ID: ""
-    REACT_APP_HOTJAR_SV: ""
+external:
+  globus:
+    redirect:
+    clientID:
+    nodes:
+  wget: https://greyworm1-rh7.llnl.gov/wget
+  search: https://esgf-node.llnl.gov/esg-search/search
+  nodeStatus: https://aims2.llnl.gov/metagrid-backend/proxy/status
+  solr: https://esgf-fedtest.llnl.gov/solr
+  keycloak:
+    url:
+    realm:
+    clientID:
+  hotjar:
+    id:
+    sv:
 
 django:
   replicaCount: 1
+
+  corsOriginWhitelist: ""
+  allowedHosts: ""
+  secretKey:
 
   image:
     # TODO: switch to ghcr.io/aims-group/metagrid-backend once permissions are fixed
@@ -56,12 +36,6 @@ django:
 
   migrateJob:
     enabled: true
-  admin_url: '{{ .Values.ingress.host }}'
-  domain_name: '{{ .Values.ingress.host }}'
-  secret_key:
-  envFrom:
-    - name: django
-      type: configmap
 
   podAnnotations: {}
 
@@ -118,10 +92,6 @@ react:
   nameOverride: ""
   fullnameOverride: ""
 
-  envFrom:
-  - type: configmap
-    name: react
-
   podAnnotations: {}
 
   podSecurityContext: {}
@@ -173,11 +143,11 @@ ingress:
   annotations: {}
   labels: {}
 
-  frontend:
+  react:
     path: /metagrid
 
-  backend:
-    path: /metagrid-backend
+  django:
+    path: /
 
 postgresql:
   enabled: true
