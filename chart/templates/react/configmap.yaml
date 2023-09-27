@@ -8,7 +8,7 @@ metadata:
 data:
   PREVIOUS_URL: {{ .Values.ingress.react.path }}
   PUBLIC_URL: {{ .Values.ingress.react.path }}
-  REACT_APP_METAGRID_API_URL: http://{{ include "metagrid.fullname" . }}-django
+  REACT_APP_METAGRID_API_URL: https://{{ .Values.ingress.host }}{{ .Values.ingress.django.path }}
   REACT_APP_PREVIOUS_URL: {{ .Values.previousURL }}
   {{- with .Values.external.globus }}
   REACT_APP_GLOBUS_REDIRECT: {{ .redirect }}
