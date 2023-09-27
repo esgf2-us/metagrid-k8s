@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/component: django
 data:
   PYTHONBUFFERED: "1"
-  DJANGO_DEBUG: {{ defult "False" .Values.django.debug }}
+  DJANGO_DEBUG: {{ default "False" .Values.django.debug | quote }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminURL }}
   DJANGO_ALLOWED_HOSTS: {{ .Values.django.allowedHosts }}
   DJANGO_SECURE_SSL_REDIRECT: "False"
