@@ -14,7 +14,7 @@ data:
   DJANGO_SETTINGS_MODULE: config.settings.production
   DJANGO_SECRET_KEY: {{ .Values.django.secretKey }}
   DOMAIN_NAME: {{ .Values.ingress.host }}
-  DOMAIN_SUBDIRECTORY: {{ .Values.ingress.django.path }}
+  DOMAIN_SUBDIRECTORY: {{ trimPrefix "/" .Values.ingress.django.path }}
   CORS_ORIGIN_WHITELIST: {{ .Values.django.corsOriginWhitelist }}
   KEYCLOAK_URL: {{ .Values.external.keycloak.url }}
   KEYCLOAK_REALM: {{ .Values.external.keycloak.realm }}
