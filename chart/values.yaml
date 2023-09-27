@@ -1,15 +1,10 @@
-# Default values for metagrid.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-ingress:
-  enabled: true
-  host:
-  annotations:
-    route.openshift.io/termination: edge
-    ccs.ornl.gov/requireAuth: "false"
-
-  labels:
-    ccs.ornl.gov/externalRoute: "true"
+keycloak:
+  external: "true"
+  # Only used if keycloak.external is true
+  url:
+  realm:
+  client_id:
+  client_secret:
 
 configmap:
   django:
@@ -31,30 +26,29 @@ configmap:
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims2.llnl.gov/metagrid-backend/proxy/status
 
   react:
-    REACT_APP_METAGRID_API_URL: '{{ .Values.ingress.host }}'
-    REACT_APP_WGET_API_URL: '{{ .Values.ingress.host }}/esg-search/wget'
-    REACT_APP_ESGF_NODE_URL: '{{ .Values.ingress.host }}/esg-search/search'
+    REACT_APP_METAGRID_API_URL: "{{ .Values.ingress.host }}"
+    PUBLIC_URL: ""
+    REACT_APP_PREVIOUS_URL: "/metagrid"
+    REACT_APP_GLOBUS_REDIRECT: ""
+    REACT_APP_CLIENT_ID: ""
+    REACT_APP_GLOBUS_NODES: ""
+    REACT_APP_WGET_API_URL: "{{ .Values.ingress.host }}/esg-search/wget"
+    REACT_APP_SEARCH_URL: "{{ .Values.ingress.host }}/esg-search/search"
     REACT_APP_ESGF_NODE_STATUS_URL: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
-    REACT_APP_KEYCLOAK_REALM: '{{ .Values.keycloak.realm }}'
+    REACT_APP_KEYCLOAK_REALM: "{{ .Values.keycloak.realm }}"
     REACT_APP_KEYCLOAK_URL: '{{ include "metagrid.keycloak_url" $ }}'
-    REACT_APP_KEYCLOAK_CLIENT_ID: '{{ .Values.keycloak.client_id }}'
-
-keycloak:
-  external: "true"
-  # Only used if keycloak.external is true
-  url:
-  realm:
-  client_id:
-  client_secret:
+    REACT_APP_KEYCLOAK_CLIENT_ID: "{{ .Values.keycloak.client_id }}"
+    REACT_APP_HOTJAR_ID: ""
+    REACT_APP_HOTJAR_SV: ""
 
 django:
-
   replicaCount: 1
 
   image:
-    repository: ""
+    # TODO: switch to ghcr.io/aims-group/metagrid-backend once permissions are fixed
+    repository: ghcr.io/esgf-nimbus/metagrid-backend
     pullPolicy: Always
-    tag: "latest"
+    tag: latest
 
   imagePullSecrets: []
   nameOverride: ""
@@ -72,27 +66,27 @@ django:
   podAnnotations: {}
 
   podSecurityContext: {}
-    # fsGroup: 2000
+  # fsGroup: 2000
 
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
   autoscaling:
     enabled: false
@@ -112,13 +106,12 @@ django:
     port: 8080
 
 react:
-
   replicaCount: 1
 
   image:
-    repository: ""
+    # TODO: switch to ghcr.io/aims-group/metagrid-frontend once permissions are fixed
+    repository: ghcr.io/esgf-nimbus/metagrid-frontend
     pullPolicy: Always
-    # Overrides the image tag whose default is the chart appVersion.
     tag: latest
 
   imagePullSecrets: []
@@ -132,27 +125,27 @@ react:
   podAnnotations: {}
 
   podSecurityContext: {}
-    # fsGroup: 2000
+  # fsGroup: 2000
 
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
   autoscaling:
     enabled: false
@@ -173,6 +166,12 @@ react:
 
   monitoring:
     enabled: false
+
+ingress:
+  enabled: false
+  host:
+  annotations: {}
+  labels: {}
 
 postgresql:
   enabled: true
