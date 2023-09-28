@@ -3,7 +3,7 @@ external:
     redirect:
     clientID:
     nodes:
-  wget: https://greyworm1-rh7.llnl.gov/wget
+  wget: https://esgf-node.llnl.gov/esg-search/wget
   search: https://esgf-node.llnl.gov/esg-search/search
   nodeStatus: https://aims2.llnl.gov/metagrid-backend/proxy/status
   solr: https://esgf-fedtest.llnl.gov/solr
