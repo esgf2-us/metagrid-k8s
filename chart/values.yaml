@@ -21,7 +21,6 @@ django:
 
   adminURL: panel/
   corsOriginWhitelist: ""
-  allowedHosts: ""
   secretKey:
 
   image:
