@@ -137,14 +137,15 @@ react:
 
 ingress:
   enabled: false
-  host:
   annotations: {}
   labels: {}
 
   react:
+    host:
     path: /metagrid
 
   django:
+    host:
     path: /metagrid-backend
 
 postgresql:
