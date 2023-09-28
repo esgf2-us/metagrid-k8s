@@ -25,8 +25,7 @@ django:
   secretKey:
 
   image:
-    # TODO: switch to ghcr.io/aims-group/metagrid-backend once permissions are fixed
-    repository: ghcr.io/esgf-nimbus/metagrid-backend
+    repository: ghcr.io/aims-group/metagrid-backend
     pullPolicy: Always
     tag: latest
 
@@ -83,8 +82,7 @@ react:
   replicaCount: 1
 
   image:
-    # TODO: switch to ghcr.io/aims-group/metagrid-frontend once permissions are fixed
-    repository: ghcr.io/esgf-nimbus/metagrid-frontend
+    repository: ghcr.io/aims-group/metagrid-frontend
     pullPolicy: Always
     tag: latest
 
