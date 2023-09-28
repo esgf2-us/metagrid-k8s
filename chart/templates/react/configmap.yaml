@@ -25,8 +25,8 @@ data:
   REACT_APP_KEYCLOAK_CLIENT_ID: {{ .clientID }}
   {{- end }}
   {{- with .Values.external.hotjar }}
-  REACT_APP_HOTJAR_ID: {{ .id }}
-  REACT_APP_HOTJAR_SV: {{ .sv }}
+  REACT_APP_HOTJAR_ID: {{ .id | quote }}
+  REACT_APP_HOTJAR_SV: {{ .sv | quote }}
   {{- end }}
   # TODO default metagrid nginx adds location for PREVIOUS_URL and breaks reverse proxy
   default.conf: |
