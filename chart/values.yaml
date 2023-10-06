@@ -1,32 +1,30 @@
-previousURL:
-
 external:
   globus:
     redirect:
     clientID:
     nodes:
-  wget: https://greyworm1-rh7.llnl.gov/wget
+  wget: https://esgf-node.llnl.gov/esg-search/wget
   search: https://esgf-node.llnl.gov/esg-search/search
   nodeStatus: https://aims2.llnl.gov/metagrid-backend/proxy/status
   solr: https://esgf-fedtest.llnl.gov/solr
   keycloak:
-    url:
-    realm:
-    clientID:
+    url: https://login.esgf.io/
+    realm: esgf
+    clientID: metagrid-llnl
   hotjar:
     id:
     sv:
+  googleAnalyticsTrackingID:
 
 django:
   replicaCount: 1
 
+  adminURL: panel/
   corsOriginWhitelist: ""
-  allowedHosts: ""
   secretKey:
 
   image:
-    # TODO: switch to ghcr.io/aims-group/metagrid-backend once permissions are fixed
-    repository: ghcr.io/esgf-nimbus/metagrid-backend
+    repository: ghcr.io/aims-group/metagrid-backend
     pullPolicy: Always
     tag: latest
 
@@ -77,14 +75,13 @@ django:
 
   service:
     type: ClusterIP
-    port: 8080
+    port: 5000
 
 react:
   replicaCount: 1
 
   image:
-    # TODO: switch to ghcr.io/aims-group/metagrid-frontend once permissions are fixed
-    repository: ghcr.io/esgf-nimbus/metagrid-frontend
+    repository: ghcr.io/aims-group/metagrid-frontend
     pullPolicy: Always
     tag: latest
 
@@ -132,24 +129,44 @@ react:
 
   service:
     type: ClusterIP
-    port: 8080
+    port: 3000
 
   monitoring:
     enabled: false
 
 ingress:
   enabled: false
-  host:
   annotations: {}
   labels: {}
 
   react:
+    host:
     path: /metagrid
 
   django:
-    path: /
+    host:
+    path: /metagrid-backend
 
 postgresql:
   enabled: true
+
+  persistence:
+    enabled: false
+
+  postgresql:
+    replicaCount: 1
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+    password: pgpass
+    repmgrPassword: repmgrpass
+
+  pgpool:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+    adminPassword: pgpooladminpass
 
 extraManifests: {}

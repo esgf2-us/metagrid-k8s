@@ -31,6 +31,7 @@ spec:
         {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          args: ["/start"]
           securityContext:
             {{- toYaml .Values.django.securityContext | nindent 12 }}
           image: "{{ .Values.django.image.repository }}:{{ .Values.django.image.tag | default .Chart.AppVersion }}"
@@ -51,15 +52,13 @@ spec:
               value: '{{ include "metagrid.django_allowed_hosts" $ }}'
           ports:
           - name: http
-            containerPort: 5000
+            containerPort: {{ .Values.django.service.port }}
             protocol: TCP
           livenessProbe:
-            httpGet:
-              path: {{ .Values.ingress.django.path }}
+            tcpSocket:
               port: http
           readinessProbe:
-            httpGet:
-              path: {{ .Values.ingress.django.path }}
+            tcpSocket:
               port: http
           resources:
             {{- toYaml .Values.django.resources | nindent 12 }}

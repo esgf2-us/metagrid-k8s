@@ -57,6 +57,17 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.react.resources | nindent 12 }}
+          volumeMounts:
+          - name: nginx-conf
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+          # - name: nginx-conf
+          #   mountPath: /usr/share/nginx/html/index.html
+          #   subPath: index.html
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: {{ include "metagrid.fullname" . }}-react
       {{- with .Values.react.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
