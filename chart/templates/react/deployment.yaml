@@ -36,16 +36,8 @@ spec:
           image: "{{ .Values.react.image.repository }}:{{ .Values.react.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.react.image.pullPolicy }}
           envFrom:
-          {{- range (default dict .Values.react.envFrom) }}
-          {{- if eq .type "configmap" }}
           - configMapRef:
-          {{- else if eq .type "secret" }}
-          - secretRef:
-          {{- else }}
-          {{ fail printf "Failed to include envFrom with type %s" .type }}
-          {{- end }}
-              name: {{ printf "%s-%s" (include "metagrid.fullname" $) .name }}
-          {{- end }}
+              name: {{ include "metagrid.fullname" . }}-react
           env:
             {{- range $key, $value := (default dict .Values.react.env) }}
             - name: {{ tpl $key $ }}
@@ -57,26 +49,25 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.ingress.react.path }}
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.ingress.react.path }}
               port: http
           resources:
             {{- toYaml .Values.react.resources | nindent 12 }}
           volumeMounts:
-          - name: runtime-conf
-            mountPath: /usr/share/nginx/html/config
-          {{- with .Values.react.extraVolumeMounts }}
-          {{- tpl (toYaml .Values.react.extraVolumeMounts) . | nindent 10 }}
-          {{- end }}
+          - name: nginx-conf
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+          # - name: nginx-conf
+          #   mountPath: /usr/share/nginx/html/index.html
+          #   subPath: index.html
       volumes:
-      - name: runtime-conf
-        emptyDir: {}
-      {{- with .Values.react.extraVolumes }}
-      {{- tpl (toYaml .Values.react.extraVolumes) . | nindent 10 }}
-      {{- end }}
+      - name: nginx-conf
+        configMap:
+          name: {{ include "metagrid.fullname" . }}-react
       {{- with .Values.react.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

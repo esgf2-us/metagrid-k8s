@@ -17,17 +17,20 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host: {{ .Values.ingress.host | quote }}
+    - host: {{ .Values.ingress.react.host | quote }}
       http:
         paths:
-          - path: /metagrid
+          - path: {{ .Values.ingress.react.path }}
             pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $fullName }}-react
                 port:
                   number: {{ .Values.react.service.port }}
-          - path: /metagrid-backend
+    - host: {{ .Values.ingress.django.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.django.path }}
             pathType: ImplementationSpecific
             backend:
               service:

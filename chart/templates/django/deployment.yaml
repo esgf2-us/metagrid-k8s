@@ -31,19 +31,14 @@ spec:
         {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          args: ["/start"]
           securityContext:
             {{- toYaml .Values.django.securityContext | nindent 12 }}
           image: "{{ .Values.django.image.repository }}:{{ .Values.django.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.django.image.pullPolicy }}
           envFrom:
-          {{- range (default dict .Values.django.envFrom) }}
-          {{- if eq .type "configmap" }}
           - configMapRef:
-          {{- else if eq .type "secret" }}
-          - secretRef:
-          {{- end }}
-              name: {{ printf "%s-%s" (include "metagrid.fullname" $) .name }}
-          {{- end }}
+              name: {{ include "metagrid.fullname" . }}-django
           env:
             {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
             - name: {{ tpl $key $ }}
@@ -57,16 +52,14 @@ spec:
               value: '{{ include "metagrid.django_allowed_hosts" $ }}'
           ports:
           - name: http
-            containerPort: 5000
+            containerPort: {{ .Values.django.service.port }}
             protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
           resources:
             {{- toYaml .Values.django.resources | nindent 12 }}
       {{- with .Values.django.nodeSelector }}

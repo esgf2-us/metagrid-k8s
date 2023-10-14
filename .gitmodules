@@ -1,4 +1,0 @@
-[submodule "metagrid"]
-	path = metagrid-upstream
-	url = https://github.com/aims-group/metagrid.git
-	branch = fix-search-setting
