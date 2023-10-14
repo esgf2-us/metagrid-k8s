@@ -1,0 +1,20 @@
+apiVersion: v1
+entries:
+  metagrid:
+  - apiVersion: v2
+    appVersion: v1.0.8
+    created: "2023-10-14T07:36:00.3759952Z"
+    dependencies:
+    - alias: postgresql
+      condition: postgresql.enabled
+      name: postgresql-ha
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=9.2.0'
+    description: A Helm chart for Kubernetes
+    digest: 309ee8bb1ef45d3fe340e84f848fcca51d8050b00a6571a91d2d1c3d92191e7b
+    name: metagrid
+    type: application
+    urls:
+    - https://github.com/esgf2-us/metagrid-k8s/releases/download/metagrid-0.1.0/metagrid-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-10-14T07:36:00.3760008Z"
