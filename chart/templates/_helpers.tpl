@@ -117,3 +117,13 @@ Django CORS_ORIGIN_WHITELIST
 {{- $defaultValue := printf "http://%v-react:%v" (include "metagrid.fullname" .) .Values.react.service.port }}
 {{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
 {{- end }}
+
+{{/*
+Django ESGF node status url
+*/}}
+{{- define "metagrid.django.esgfNodeStatusURL" -}}
+{{- $service := printf "%v:%v" .Values.ingress.django.host .Values.django.service.port }}
+{{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
+{{- $url := printf "http://%v/%v/proxy/status" $host (trimPrefix "/" .Values.ingress.django.path) }}
+{{- printf "%v" (default $url .Values.external.nodeStatus) }}
+{{- end }}
