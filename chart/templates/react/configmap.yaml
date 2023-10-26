@@ -9,7 +9,7 @@ data:
   PREVIOUS_URL: {{ .Values.ingress.react.path }}
   # If PUBLIC_URL is "/" then metagrid expects it to be ""
   PUBLIC_URL: {{ ternary "" .Values.ingress.react.path (eq .Values.ingress.react.path "/") }}
-  REACT_APP_METAGRID_API_URL: https://{{ .Values.ingress.django.host }}{{ .Values.ingress.django.path }}
+  REACT_APP_METAGRID_API_URL: {{ include "metagrid.react.metagridUrl" . }}
   REACT_APP_PREVIOUS_URL: {{ .Values.previousURL }}
   {{- with .Values.external.globus }}
   REACT_APP_GLOBUS_REDIRECT: {{ .redirect }}
@@ -31,7 +31,7 @@ data:
   # TODO default metagrid nginx adds location for PREVIOUS_URL and breaks reverse proxy
   default.conf: |
     server {
-      listen 3000;
+      listen {{ .Values.react.service.port }};
 
       location ^~ {{ .Values.ingress.react.path }} {
         alias   /usr/share/nginx/html/;

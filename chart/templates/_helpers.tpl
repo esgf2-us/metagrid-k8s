@@ -109,3 +109,28 @@ Django ALLOWED_HOSTS
 {{- define "metagrid.django_allowed_hosts" -}}
 {{- join "," (list "$(THIS_POD_IP)" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
 {{- end }}
+
+{{/*
+Django CORS_ORIGIN_WHITELIST
+*/}}
+{{- define "metagrid.django.corsOriginWhitelist" -}}
+{{- $defaultValue := printf "http://%v-react:%v" (include "metagrid.fullname" .) .Values.react.service.port }}
+{{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
+{{- end }}
+
+{{/*
+Django ESGF node status url
+*/}}
+{{- define "metagrid.django.esgfNodeStatusUrl" -}}
+{{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
+{{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
+{{- $url := printf "http://%v/%v/proxy/status" $host (trimPrefix "/" .Values.ingress.django.path) }}
+{{- printf "%v" (default $url .Values.external.nodeStatus) }}
+{{- end }}
+
+{{- define "metagrid.react.metagridUrl" -}}
+{{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
+{{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
+{{- $url := printf "http://%v/%v" $host .Values.ingress.django.path  }}
+{{- printf "%v" (default $url .Values.external.metagridAPIUrl) }}
+{{- end }}

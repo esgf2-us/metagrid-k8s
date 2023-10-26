@@ -5,7 +5,8 @@ external:
     nodes:
   wget: https://esgf-node.llnl.gov/esg-search/wget
   search: https://esgf-node.llnl.gov/esg-search/search
-  nodeStatus: https://aims2.llnl.gov/metagrid-backend/proxy/status
+  nodeStatus:
+  metagridAPIUrl:
   solr: https://esgf-fedtest.llnl.gov/solr
   keycloak:
     url: https://login.esgf.io/
@@ -19,9 +20,11 @@ external:
 django:
   replicaCount: 1
 
+  debug: false
   adminURL: panel/
   corsOriginWhitelist: ""
   secretKey:
+  gunicornCmdArgs:
 
   image:
     repository: ghcr.io/aims-group/metagrid-backend
