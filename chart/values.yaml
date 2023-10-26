@@ -5,7 +5,7 @@ external:
     nodes:
   wget: https://esgf-node.llnl.gov/esg-search/wget
   search: https://esgf-node.llnl.gov/esg-search/search
-  nodeStatus: https://aims2.llnl.gov/metagrid-backend/proxy/status
+  nodeStatus:
   solr: https://esgf-fedtest.llnl.gov/solr
   keycloak:
     url: https://login.esgf.io/
