@@ -6,6 +6,9 @@ metadata:
     {{- include "metagrid.labels" . | nindent 4 }}
     app.kubernetes.io/component: django
 data:
+  {{- with .Values.django.gunicornCmdArgs }}
+  GUNICORN_CMD_ARGS: {{ . | quote }}
+  {{- end }}
   PYTHONBUFFERED: "1"
   DJANGO_DEBUG: {{ default "False" .Values.django.debug | quote }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminURL }}
