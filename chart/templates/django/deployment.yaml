@@ -39,6 +39,8 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ include "metagrid.fullname" . }}-django
+          - secretRef:
+              name: {{ include "metagrid.fullname" . }}-django
           env:
             {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
             - name: {{ tpl $key $ }}
