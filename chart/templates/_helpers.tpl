@@ -109,3 +109,11 @@ Django ALLOWED_HOSTS
 {{- define "metagrid.django_allowed_hosts" -}}
 {{- join "," (list "$(THIS_POD_IP)" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
 {{- end }}
+
+{{/*
+Django CORS_ORIGIN_WHITELIST
+*/}}
+{{- define "metagrid.django.corsOriginWhitelist" -}}
+{{- $defaultValue := printf "http://%v-react:%v" (include "metagrid.fullname" .) .Values.react.service.port }}
+{{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
+{{- end }}
