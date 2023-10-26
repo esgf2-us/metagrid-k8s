@@ -23,7 +23,7 @@ data:
   KEYCLOAK_CLIENT_ID: {{ .Values.external.keycloak.clientID }}
   REACT_APP_WGET_API_URL: {{ .Values.external.wget }}
   REACT_APP_SEARCH_URL: {{ .Values.external.search }}
-  REACT_APP_ESGF_NODE_STATUS_URL: {{ include "metagrid.django.esgfNodeStatusURL" . }}
+  REACT_APP_ESGF_NODE_STATUS_URL: {{ include "metagrid.django.esgfNodeStatusUrl" . }}
   REACT_APP_ESGF_SOLR_URL: {{ .Values.external.solr }}
   POSTGRES_HOST: {{ include "metagrid.pg_host" . }}
   POSTGRES_PORT: {{ include "metagrid.pg_port" . | quote }}
