@@ -42,6 +42,10 @@ spec:
           - secretRef:
               name: {{ include "metagrid.fullname" . }}-django
           env:
+            {{- with .Values.django.gunicornCmdArgs }}
+            - name: GUNICORN_CMD_ARGS
+              value: {{ . | quote }}
+            {{- end }}
             {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
             - name: {{ tpl $key $ }}
               value: {{ tpl $value $ | quote }}

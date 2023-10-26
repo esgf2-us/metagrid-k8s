@@ -22,6 +22,7 @@ django:
   adminURL: panel/
   corsOriginWhitelist: ""
   secretKey:
+  gunicornCmdArgs: --workers 2
 
   image:
     repository: ghcr.io/aims-group/metagrid-backend
