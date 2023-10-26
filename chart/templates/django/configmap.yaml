@@ -10,7 +10,7 @@ data:
   GUNICORN_CMD_ARGS: {{ . | quote }}
   {{- end }}
   PYTHONBUFFERED: "1"
-  DJANGO_DEBUG: {{ default "False" .Values.django.debug | quote }}
+  DJANGO_DEBUG: {{ .Values.django.debug | quote }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminURL }}
   DJANGO_ALLOWED_HOSTS: {{ include "metagrid.django_allowed_hosts" . }}
   DJANGO_SECURE_SSL_REDIRECT: "False"
