@@ -1,48 +1,79 @@
 external:
   globus:
+    # -- Redirect URI used to obtain Globus authorization token
     redirect:
+    # -- Client ID used to obtain Globus authorization token
     clientID:
+    # -- List of Globus nodes separated by commas
     nodes:
+  # -- ESGF wget service URL
   wget: https://esgf-node.llnl.gov/esg-search/wget
+  # -- ESGF search URL
   search: https://esgf-node.llnl.gov/esg-search/search
+  # -- Override node status URL, may be required when using an ingress
+  # @default -- URL to the django backend node status path
   nodeStatus:
+  # -- Override the metagrid API URL, may be required when using an ingress
+  # @default -- URL to the django backend api path
   metagridAPIUrl:
+  # -- URL for the ESGF solr catalog
   solr: https://esgf-fedtest.llnl.gov/solr
   keycloak:
+    # -- URL of the ESGF Keycloak instance
     url: https://login.esgf.io/
+    # -- Keycloak realm
     realm: esgf
+    # -- Keycloak client ID
     clientID: metagrid-llnl
+  # -- [Hotjar](https://www.hotjar.com/) tracking codes, **OPTIONAL**
   hotjar:
     id:
     sv:
+  # -- Google analytics tracking id, **OPTIONAL**
   googleAnalyticsTrackingID:
 
 django:
+  # -- Number of replicas
   replicaCount: 1
 
+  # -- Enable Django debugging
   debug: false
+  # -- Relative path to the Django management panel
   adminURL: panel/
-  corsOriginWhitelist: ""
+  # -- Override CORS origin whitelist
+  # @default -- to django backend service url
+  corsOriginWhitelist:
+  # -- Django secret key, recommended to set a value rather than use the random default value
+  # @default -- a random 50 character string
   secretKey:
+  # -- Override the gunicorn command arguments
   gunicornCmdArgs:
 
   image:
+    # -- Django container URI
     repository: ghcr.io/aims-group/metagrid-backend
+    # -- Image pull policy
     pullPolicy: Always
+    # -- Container tag
     tag: latest
 
+  # -- List of image pull secrets
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
 
   migrateJob:
+    # -- Enable database migration job
     enabled: true
 
+  # -- Extra pod annotations
   podAnnotations: {}
 
+  # -- Pod security context
   podSecurityContext: {}
   # fsGroup: 2000
 
+  # -- Container security context
   securityContext: {}
   # capabilities:
   #   drop:
@@ -51,6 +82,7 @@ django:
   # runAsNonRoot: true
   # runAsUser: 1000
 
+  # -- Pod resources requests/limits
   resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -63,6 +95,7 @@ django:
   #   cpu: 100m
   #   memory: 128Mi
 
+  # -- Horizontal pod autoscaling configuration
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -70,33 +103,47 @@ django:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  # -- Node selector
   nodeSelector: {}
 
+  # -- Tolerations
   tolerations: []
 
+  # -- Affinity
   affinity: {}
 
+  # -- Django service
   service:
+    # -- Service type
     type: ClusterIP
+    # -- Service port
     port: 5000
 
 react:
+  # -- Number of replicas
   replicaCount: 1
 
   image:
+    # -- React container URI
     repository: ghcr.io/aims-group/metagrid-frontend
+    # -- Container pull policy
     pullPolicy: Always
+    # -- Container tag
     tag: latest
 
+  # -- List of image pull secrets
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
 
+  # -- Extra pod annotations
   podAnnotations: {}
 
+  # -- Pod security context
   podSecurityContext: {}
   # fsGroup: 2000
 
+  # -- Container security context
   securityContext: {}
   # capabilities:
   #   drop:
@@ -105,6 +152,7 @@ react:
   # runAsNonRoot: true
   # runAsUser: 1000
 
+  # -- Resources requests/limits
   resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -117,6 +165,7 @@ react:
   #   cpu: 100m
   #   memory: 128Mi
 
+  # -- Horizontal Pod autoscaling configuration
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -124,35 +173,53 @@ react:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  # -- Node selector
   nodeSelector: {}
 
+  # -- Tolerations
   tolerations: []
 
+  # -- Affinity
   affinity: {}
 
+  # -- React service
   service:
+    # -- Service type
     type: ClusterIP
+    # -- Service port
     port: 3000
 
+  # -- Prometheus monitoring
   monitoring:
     enabled: false
 
 ingress:
+  # -- Enable ingress
   enabled: false
+  # -- Extra ingress annotations
   annotations: {}
+  # -- Extra ingress labels
   labels: {}
 
+  # -- React ingress endpoint
   react:
+    # -- Endpoint host
     host:
+    # -- Endpoint path
     path: /metagrid
 
+  # -- Django ingress endpoint
   django:
+    # -- Endpoint host
     host:
+    # -- Endpoint path
     path: /metagrid-backend
 
+# -- Postgresql database, **REQUIRED**
 postgresql:
   enabled: true
 
+  # -- Enabled persistence
   persistence:
     enabled: false
 
@@ -162,7 +229,9 @@ postgresql:
       enabled: false
     containerSecurityContext:
       enabled: false
+    # -- Postgresql password, should replace the default with something more secure
     password: pgpass
+    # -- Postgresql replication manager password, should replace the default with something more secure
     repmgrPassword: repmgrpass
 
   pgpool:
@@ -170,6 +239,8 @@ postgresql:
       enabled: false
     containerSecurityContext:
       enabled: false
+    # -- Postgresql Pgpool admin password, should replace the default with something more secure
     adminPassword: pgpooladminpass
 
+# -- Extra manifests
 extraManifests: {}
