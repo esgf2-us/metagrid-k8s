@@ -39,8 +39,10 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ include "metagrid.fullname" . }}-django
+          - secretRef:
+              name: {{ include "metagrid.fullname" . }}-django
           env:
-            {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
+            {{- range $key, $value := default dict .Values.django.env}}
             - name: {{ tpl $key $ }}
               value: {{ tpl $value $ | quote }}
             {{- end }}
@@ -48,8 +50,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: DJANGO_ALLOWED_HOSTS
-              value: '{{ include "metagrid.django_allowed_hosts" $ }}'
           ports:
           - name: http
             containerPort: {{ .Values.django.service.port }}

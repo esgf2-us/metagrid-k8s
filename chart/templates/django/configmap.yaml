@@ -6,26 +6,24 @@ metadata:
     {{- include "metagrid.labels" . | nindent 4 }}
     app.kubernetes.io/component: django
 data:
+  {{- with .Values.django.gunicornCmdArgs }}
+  GUNICORN_CMD_ARGS: {{ . | quote }}
+  {{- end }}
   PYTHONBUFFERED: "1"
-  DJANGO_DEBUG: {{ default "False" .Values.django.debug | quote }}
+  DJANGO_DEBUG: {{ .Values.django.debug | quote }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminURL }}
   DJANGO_ALLOWED_HOSTS: {{ include "metagrid.django_allowed_hosts" . }}
   DJANGO_SECURE_SSL_REDIRECT: "False"
   DJANGO_SETTINGS_MODULE: config.settings.production
-  DJANGO_SECRET_KEY: {{ .Values.django.secretKey }}
-  DOMAIN_NAME: {{ .Values.ingress.host }}
+  DOMAIN_NAME: {{ default "127.0.0.1" .Values.ingress.django.host }}
   DOMAIN_SUBDIRECTORY: {{ trimPrefix "/" .Values.ingress.django.path }}
-  CORS_ORIGIN_WHITELIST: {{ .Values.django.corsOriginWhitelist }}
+  CORS_ORIGIN_WHITELIST: {{ include "metagrid.django.corsOriginWhitelist" . }}
   KEYCLOAK_URL: {{ .Values.external.keycloak.url }}
   KEYCLOAK_REALM: {{ .Values.external.keycloak.realm }}
   KEYCLOAK_CLIENT_ID: {{ .Values.external.keycloak.clientID }}
   REACT_APP_WGET_API_URL: {{ .Values.external.wget }}
   REACT_APP_SEARCH_URL: {{ .Values.external.search }}
-  REACT_APP_ESGF_NODE_STATUS_URL: {{ .Values.external.nodeStatus }}
+  REACT_APP_ESGF_NODE_STATUS_URL: {{ include "metagrid.django.esgfNodeStatusUrl" . }}
   REACT_APP_ESGF_SOLR_URL: {{ .Values.external.solr }}
-  DATABASE_URL: {{ include "metagrid.pg_uri" . }}
-  POSTGRES_DB: {{ include "metagrid.pg_db" . }}
-  POSTGRES_USER: {{ include "metagrid.pg_user" . }}
-  POSTGRES_PASSWORD: {{ include "metagrid.pg_pass" . }}
   POSTGRES_HOST: {{ include "metagrid.pg_host" . }}
   POSTGRES_PORT: {{ include "metagrid.pg_port" . | quote }}
