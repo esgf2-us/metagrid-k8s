@@ -5,7 +5,7 @@ This repository contains the Helm chart for installing [Metagrid](https://github
 # Adding the Chart
 
 ```
-helm repo add https://esgf2-us.github.io/metagrid-k8s
+helm repo add metagrid https://esgf2-us.github.io/metagrid-k8s
 helm repo update
 ```
 
