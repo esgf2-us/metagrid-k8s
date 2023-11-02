@@ -46,10 +46,6 @@ spec:
             - name: {{ tpl $key $ }}
               value: {{ tpl $value $ | quote }}
             {{- end }}
-            - name: THIS_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
           ports:
           - name: http
             containerPort: {{ .Values.django.service.port }}
