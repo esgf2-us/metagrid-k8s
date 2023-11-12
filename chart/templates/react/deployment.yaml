@@ -23,57 +23,15 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: react
     spec:
-      imagePullSecrets:
-      {{- range $name, $_ := .Values.imagePullSecrets }}
-      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
-      {{- end }}
-      securityContext:
-        {{- toYaml .Values.react.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.react.securityContext | nindent 12 }}
-          image: "{{ .Values.react.image.repository }}:{{ .Values.react.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.react.image.pullPolicy }}
-          envFrom:
-          - configMapRef:
-              name: {{ include "metagrid.fullname" . }}-react
-          env:
-            {{- range $key, $value := (default dict .Values.react.env) }}
-            - name: {{ tpl $key $ }}
-              value: {{ tpl $value $ | quote }}
-            {{- end }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.react.service.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.ingress.react.path }}
-              port: http
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.ingress.react.path }}
-              port: http
-          resources:
-            {{- toYaml .Values.react.resources | nindent 12 }}
-          volumeMounts:
-          - name: nginx-conf
-            mountPath: /etc/nginx/conf.d/default.conf
-            subPath: default.conf
-      volumes:
-      - name: nginx-conf
-        configMap:
-          name: {{ include "metagrid.fullname" . }}-react
-      {{- with .Values.react.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.react.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.react.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- $react := deepCopy .Values.django }}
+      {{- $_ := set $react "name" "react" }}
+      {{- $_ := set $react.image "pullSecrets" .Values.imagePullSecrets }}
+      {{- $config := dict "configMapRef" (dict "name" (printf "%s-react" (include "metagrid.fullname" .))) }}
+      {{- $_ := set $react "envFrom" (list $config) }}
+      {{- $_ := set $react "TemplateValues" . }}
+      {{- $_ := set $react.service "name" "http" }}
+      {{- $_ := set $react "livenessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.ingress.react.path)) }}
+      {{- $_ := set $react "readinessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.ingress.react.path)) }}
+      {{- $persistence := dict "type" "configmap" "name" "nginx-conf" "resourceName" (printf "%s-%s" (include "metagrid.fullname" .) "react") "mountPath" "/etc/nginx/config.d/default.conf" "subPath" "default.conf" }}
+      {{- $_ := set $react "persistence" $persistence }}
+      {{- include "metagrid.podSpec" $react | nindent 6 }}

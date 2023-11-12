@@ -15,51 +15,17 @@ metadata:
     {{- with .Values.django.podAnnotations }}
       {{- toYaml . | nindent 8 }}
     {{- end }}
-
 spec:
   backoffLimit: 0
   template:
     spec:
-      imagePullSecrets:
-      {{- range $name, $_ := .Values.imagePullSecrets }}
-      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
-      {{- end }}
-      securityContext:
-        {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.django.securityContext | nindent 12 }}
-          image: "{{ .Values.django.image.repository }}:{{ .Values.django.image.tag }}"
-          imagePullPolicy: {{ .Values.django.image.pullPolicy }}
-          args: ["python",  "manage.py", "migrate", "--settings=$(DJANGO_SETTINGS_MODULE)"]
-          envFrom:
-          - configMapRef:
-              name: {{ include "metagrid.fullname" . }}-django
-          - secretRef:
-              name: {{ include "metagrid.fullname" . }}-django
-          env:
-            {{- range $key, $value := omit (default dict .Values.django.env) "DJANGO_ALLOWED_HOSTS" }}
-            - name: {{ tpl $key $ }}
-              value: {{ tpl $value $ | quote }}
-            {{- end }}
-            - name: THIS_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: DJANGO_ALLOWED_HOSTS
-              value: '{{ include "metagrid.django_allowed_hosts" $ }}'
-      restartPolicy: Never
-      {{- with .Values.django.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.django.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.django.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-  {{- end -}}
+      {{- $django := deepCopy .Values.django }}
+      {{- $_ := set $django "name" "migrate" }}
+      {{- $_ := set $django.image "pullSecrets" .Values.imagePullSecrets }}
+      {{- $_ := set $django "args" (list "python" "manage.py" "migrate" "--settings=$(DJANGO_SETTINGS_MODULE)") }}
+      {{- $config := dict "configMapRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
+      {{- $secret := dict "secretRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
+      {{- $_ := set $django "envFrom" (list $config $secret) }}
+      {{- $_ := set $django "TemplateValues" . }}
+      {{- include "metagrid.podSpec" $django | nindent 6 }}
+{{- end -}}
