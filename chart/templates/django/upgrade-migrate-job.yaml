@@ -27,5 +27,6 @@ spec:
       {{- $secret := dict "secretRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
       {{- $_ := set $django "envFrom" (list $config $secret) }}
       {{- $_ := set $django "TemplateValues" . }}
+      {{- $_ := set $django "restartPolicy" $django.migrateJob.restartPolicy }}
       {{- include "metagrid.podSpec" $django | nindent 6 }}
 {{- end -}}
