@@ -40,5 +40,12 @@ spec:
                 name: {{ $fullName }}-django
                 port:
                   number: {{ $.Values.django.service.port }}
+  {{- if .tls.enabled }}
+  tls:
+  - hosts:
+      - {{ .react.host }}
+      - {{ .django.host }}
+    secretName: {{ .tls.secretName }}
+  {{- end }}
 {{- end }}
 {{- end }}
