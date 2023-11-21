@@ -185,6 +185,8 @@ ingress:
   annotations: {}
   # -- Extra ingress labels
   labels: {}
+  # -- Override ingress class
+  className:
 
   # -- React ingress endpoint
   react:
