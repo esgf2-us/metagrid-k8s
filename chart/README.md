@@ -81,8 +81,6 @@ helm delete my-release
 | django.service | object | `{"port":5000,"type":"ClusterIP"}` | Django service |
 | django.service.type | string | `"ClusterIP"` | Service type |
 | django.service.port | int | `5000` | Service port |
-| django.extraVolumes | list | `[]` |  |
-| django.extraVolumeMounts | list | `[]` |  |
 | react.replicaCount | int | `1` | Number of replicas |
 | react.image.repository | string | `"ghcr.io/aims-group/metagrid-frontend"` | React container URI |
 | react.image.pullPolicy | string | `"Always"` | Container pull policy |
@@ -104,17 +102,15 @@ helm delete my-release
 | react.service.type | string | `"ClusterIP"` | Service type |
 | react.service.port | int | `3000` | Service port |
 | react.monitoring | object | `{"enabled":false}` | Prometheus monitoring |
-| react.extraVolumes | list | `[]` |  |
-| react.extraVolumeMounts | list | `[]` |  |
-| ingress.enabled | bool | `true` | Enable ingress |
+| ingress.enabled | bool | `false` | Enable ingress |
 | ingress.annotations | object | `{}` | Extra ingress annotations |
 | ingress.labels | object | `{}` | Extra ingress labels |
 | ingress.className | string | `nil` | Override ingress class |
-| ingress.react | object | `{"host":"metagrid.angrydonkey.io","path":"/metagrid"}` | React ingress endpoint |
-| ingress.react.host | string | `"metagrid.angrydonkey.io"` | Endpoint host |
+| ingress.react | object | `{"host":null,"path":"/metagrid"}` | React ingress endpoint |
+| ingress.react.host | string | `nil` | Endpoint host |
 | ingress.react.path | string | `"/metagrid"` | Endpoint path |
-| ingress.django | object | `{"host":"metagrid.angrydonkey.io","path":"/metagrid-backend"}` | Django ingress endpoint |
-| ingress.django.host | string | `"metagrid.angrydonkey.io"` | Endpoint host |
+| ingress.django | object | `{"host":null,"path":"/metagrid-backend"}` | Django ingress endpoint |
+| ingress.django.host | string | `nil` | Endpoint host |
 | ingress.django.path | string | `"/metagrid-backend"` | Endpoint path |
 | ingress.tls.enabled | bool | `false` |  |
 | ingress.tls.secretName | string | `nil` |  |
@@ -126,8 +122,11 @@ helm delete my-release
 | extraManifests | object | `{}` | Extra manifests |
 
 ## Configuration and installation details
-### External TLS terminatioj
-Some urls are auto-generated based on the configuration of the ingress. If TLS is not configured on the ingress (handled by upstream ingress) then this may result in some misconfiguration.
+### External TLS termination
+The `nodeStatus` and `metagridAPIUrl` values by default are automatically generated. If using an upstream reverse-proxy that handles TLS, then these urls will be incorrect and cause
+the application to not work correctly.
+
+To fix this both `nodeStatus` and `metagridAPIUrl` need to be overwritten, see the following example.
 
 ```
 external:

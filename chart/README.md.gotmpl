@@ -29,8 +29,11 @@ helm delete my-release
 {{ template "chart.valuesSection" . }}
 
 ## Configuration and installation details
-### External TLS terminatioj
-Some urls are auto-generated based on the configuration of the ingress. If TLS is not configured on the ingress (handled by upstream ingress) then this may result in some misconfiguration.
+### External TLS termination
+The `nodeStatus` and `metagridAPIUrl` values by default are automatically generated. If using an upstream reverse-proxy that handles TLS, then these urls will be incorrect and cause
+the application to not work correctly.
+
+To fix this both `nodeStatus` and `metagridAPIUrl` need to be overwritten, see the following example.
 
 ```
 external:
