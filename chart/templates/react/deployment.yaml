@@ -32,6 +32,7 @@ spec:
       {{- $_ := set $react.service "name" "http" }}
       {{- $_ := set $react "livenessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.ingress.react.path)) }}
       {{- $_ := set $react "readinessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.ingress.react.path)) }}
-      {{- $persistence := dict "type" "configmap" "name" "nginx-conf" "resourceName" (printf "%s-%s" (include "metagrid.fullname" .) "react") "mountPath" "/etc/nginx/config.d/default.conf" "subPath" "default.conf" }}
+      {{- $resourceName := printf "%s-react" (include "metagrid.fullname" .) }}
+      {{- $persistence := dict "type" "configmap" "name" "nginx-conf" "resourceName" $resourceName "mountPath" "/etc/nginx/conf.d/default.conf" "subPath" "default.conf" "readOnly" true }}
       {{- $_ := set $react "persistence" $persistence }}
       {{- include "metagrid.podSpec" $react | nindent 6 }}
