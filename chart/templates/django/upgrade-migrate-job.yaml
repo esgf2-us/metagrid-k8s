@@ -1,4 +1,15 @@
 {{- if .Values.django.migrateJob.enabled -}}
+{{- with .Values.projects }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "metagrid.fullname" $ }}-projects
+  namespace: {{ $.Release.Namespace }}
+data:
+  initial_projects_data.py: |
+  {{ $.Values.projects | nindent 4 }}
+---
+{{- end }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -28,5 +39,10 @@ spec:
       {{- $_ := set $django "envFrom" (list $config $secret) }}
       {{- $_ := set $django "TemplateValues" . }}
       {{- $_ := set $django "restartPolicy" $django.migrateJob.restartPolicy }}
+      {{- with .Values.projects }}
+      {{- $resourceName := printf "%s-projects" (include "metagrid.fullname" $) }}
+      {{- $persistence := dict "type" "configmap" "name" "projects" "resourceName" $resourceName "mountPath" "/app/metagrid/initial_projects_data.py" "subPath" "initial_projects_data.py" }}
+      {{- $_ := set $django "persistence" $persistence }}
+      {{- end }}
       {{- include "metagrid.podSpec" $django | nindent 6 }}
 {{- end -}}

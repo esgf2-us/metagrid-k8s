@@ -32,6 +32,26 @@ external:
   # -- Google analytics tracking id, **OPTIONAL**
   googleAnalyticsTrackingID:
 
+# -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
+projects:
+
+# Example projects
+#
+# projects: |
+#   group_descriptions = {
+#     "General": "Least verbose, typically returns many results",
+#   }
+#   projects = [
+#     {
+#       "name": "Example",
+#       "full_name": "Example project",
+#       ...
+#       "facets_by_group": {
+#         "General": ["activity_id", "data_node"],
+#       }
+#     }
+#   ]
+
 # -- List of secrets used to pull images from private registries
 imagePullSecrets: []
 

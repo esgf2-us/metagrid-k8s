@@ -52,6 +52,7 @@ helm delete my-release
 | external.keycloak.clientID | string | `"metagrid-llnl"` | Keycloak client ID |
 | external.hotjar | object | `{"id":null,"sv":null}` | [Hotjar](https://www.hotjar.com/) tracking codes, **OPTIONAL** |
 | external.googleAnalyticsTrackingID | string | `nil` | Google analytics tracking id, **OPTIONAL** |
+| projects | string | `nil` | Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py) |
 | imagePullSecrets | list | `[]` | List of secrets used to pull images from private registries |
 | django.replicaCount | int | `1` | Number of replicas |
 | django.debug | bool | `false` | Enable Django debugging |
@@ -80,6 +81,8 @@ helm delete my-release
 | django.service | object | `{"port":5000,"type":"ClusterIP"}` | Django service |
 | django.service.type | string | `"ClusterIP"` | Service type |
 | django.service.port | int | `5000` | Service port |
+| django.extraVolumes | list | `[]` |  |
+| django.extraVolumeMounts | list | `[]` |  |
 | react.replicaCount | int | `1` | Number of replicas |
 | react.image.repository | string | `"ghcr.io/aims-group/metagrid-frontend"` | React container URI |
 | react.image.pullPolicy | string | `"Always"` | Container pull policy |
@@ -101,15 +104,20 @@ helm delete my-release
 | react.service.type | string | `"ClusterIP"` | Service type |
 | react.service.port | int | `3000` | Service port |
 | react.monitoring | object | `{"enabled":false}` | Prometheus monitoring |
-| ingress.enabled | bool | `false` | Enable ingress |
+| react.extraVolumes | list | `[]` |  |
+| react.extraVolumeMounts | list | `[]` |  |
+| ingress.enabled | bool | `true` | Enable ingress |
 | ingress.annotations | object | `{}` | Extra ingress annotations |
 | ingress.labels | object | `{}` | Extra ingress labels |
-| ingress.react | object | `{"host":null,"path":"/metagrid"}` | React ingress endpoint |
-| ingress.react.host | string | `nil` | Endpoint host |
+| ingress.className | string | `nil` | Override ingress class |
+| ingress.react | object | `{"host":"metagrid.angrydonkey.io","path":"/metagrid"}` | React ingress endpoint |
+| ingress.react.host | string | `"metagrid.angrydonkey.io"` | Endpoint host |
 | ingress.react.path | string | `"/metagrid"` | Endpoint path |
-| ingress.django | object | `{"host":null,"path":"/metagrid-backend"}` | Django ingress endpoint |
-| ingress.django.host | string | `nil` | Endpoint host |
+| ingress.django | object | `{"host":"metagrid.angrydonkey.io","path":"/metagrid-backend"}` | Django ingress endpoint |
+| ingress.django.host | string | `"metagrid.angrydonkey.io"` | Endpoint host |
 | ingress.django.path | string | `"/metagrid-backend"` | Endpoint path |
+| ingress.tls.enabled | bool | `false` |  |
+| ingress.tls.secretName | string | `nil` |  |
 | postgresql | object | `{"enabled":true,"persistence":{"enabled":false},"pgpool":{"adminPassword":"pgpooladminpass","containerSecurityContext":{"enabled":false},"podSecurityContext":{"enabled":false}},"postgresql":{"containerSecurityContext":{"enabled":false},"password":"pgpass","podSecurityContext":{"enabled":false},"replicaCount":1,"repmgrPassword":"repmgrpass"}}` | Postgresql database, **REQUIRED** |
 | postgresql.persistence | object | `{"enabled":false}` | Enabled persistence |
 | postgresql.postgresql.password | string | `"pgpass"` | Postgresql password, should replace the default with something more secure |
