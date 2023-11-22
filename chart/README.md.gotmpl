@@ -29,6 +29,36 @@ helm delete my-release
 {{ template "chart.valuesSection" . }}
 
 ## Configuration and installation details
+### Setting the initial projects
+The `projects` value can be used to set the initial projects loaded by the backend. The following example will create a simple `CMIP6` project.
+
+```
+projects: |
+  group_description = {
+    "General": "Just a group",
+  }
+  projects = [
+    {
+      "name": "CMIP6",
+      ...
+      "facets_by_group": {
+        "General": ["data_node"],
+      },
+  ]
+```
+
+To add/remove projects after the initial migration, edit `projects` and upgrade the `Helm` chart. Next clear the existing database tables and run the migration update.
+
+#### Clear existing database tables
+```
+kubectl exec -it $(kubectl get pod -oname -l app.kubernetes.io/component=django) -- python manage.py migrate projects zero
+```
+
+#### Run the migration update
+```
+kubectl exec -it $(kubectl get pod -oname -l app.kubernetes.io/component=django) -- python manage.py migrate projects
+```
+
 ### External TLS termination
 The `nodeStatus` and `metagridAPIUrl` values by default are automatically generated. If using an upstream reverse-proxy that handles TLS, then these urls will be incorrect and cause
 the application to not work correctly.
