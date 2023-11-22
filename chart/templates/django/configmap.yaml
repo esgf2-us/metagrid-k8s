@@ -12,7 +12,7 @@ data:
   PYTHONBUFFERED: "1"
   DJANGO_DEBUG: {{ .Values.django.debug | quote }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminURL }}
-  DJANGO_ALLOWED_HOSTS: {{ include "metagrid.django_allowed_hosts" . }}
+  DJANGO_ALLOWED_HOSTS: {{ include "metagrid.django_allowed_hosts" . | quote }}
   DJANGO_SECURE_SSL_REDIRECT: "False"
   DJANGO_SETTINGS_MODULE: config.settings.production
   DOMAIN_NAME: {{ default "127.0.0.1" .Values.ingress.django.host }}
