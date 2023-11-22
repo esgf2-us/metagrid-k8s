@@ -23,7 +23,7 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: react
     spec:
-      {{- $react := deepCopy .Values.django }}
+      {{- $react := deepCopy .Values.react }}
       {{- $_ := set $react "name" "react" }}
       {{- $_ := set $react.image "pullSecrets" .Values.imagePullSecrets }}
       {{- $config := dict "configMapRef" (dict "name" (printf "%s-react" (include "metagrid.fullname" .))) }}
