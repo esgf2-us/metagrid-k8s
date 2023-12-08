@@ -23,50 +23,15 @@ spec:
         {{- include "metagrid.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: django
     spec:
-      imagePullSecrets:
-      {{- range $name, $_ := .Values.imagePullSecrets }}
-      - name: {{ include "metagrid.fullname" $ }}-{{ regexReplaceAll "\\W+" $name "-" }}
-      {{- end }}
-      securityContext:
-        {{- toYaml .Values.django.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
-          args: ["/start"]
-          securityContext:
-            {{- toYaml .Values.django.securityContext | nindent 12 }}
-          image: "{{ .Values.django.image.repository }}:{{ .Values.django.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.django.image.pullPolicy }}
-          envFrom:
-          - configMapRef:
-              name: {{ include "metagrid.fullname" . }}-django
-          - secretRef:
-              name: {{ include "metagrid.fullname" . }}-django
-          env:
-            {{- range $key, $value := default dict .Values.django.env}}
-            - name: {{ tpl $key $ }}
-              value: {{ tpl $value $ | quote }}
-            {{- end }}
-          ports:
-          - name: http
-            containerPort: {{ .Values.django.service.port }}
-            protocol: TCP
-          livenessProbe:
-            tcpSocket:
-              port: http
-          readinessProbe:
-            tcpSocket:
-              port: http
-          resources:
-            {{- toYaml .Values.django.resources | nindent 12 }}
-      {{- with .Values.django.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.django.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.django.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- $django := deepCopy .Values.django }}
+      {{- $_ := set $django "name" "django" }}
+      {{- $_ := set $django.image "pullSecrets" .Values.imagePullSecrets }}
+      {{- $_ := set $django "args" (list "/start") }}
+      {{- $config := dict "configMapRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
+      {{- $secret := dict "secretRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
+      {{- $_ := set $django "envFrom" (list $config $secret) }}
+      {{- $_ := set $django "TemplateValues" . }}
+      {{- $_ := set $django.service "name" "http" }}
+      {{- $_ := set $django "livenessProbe" (dict "tcpSocket" (dict "port" "http")) }}
+      {{- $_ := set $django "readinessProbe" (dict "tcpSocket" (dict "port" "http")) }}
+      {{- include "metagrid.podSpec" $django | nindent 6 }}

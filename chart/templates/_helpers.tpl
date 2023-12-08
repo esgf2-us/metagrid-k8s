@@ -123,14 +123,132 @@ Django ESGF node status url
 */}}
 {{- define "metagrid.django.esgfNodeStatusUrl" -}}
 {{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
+{{- $ssl := ternary "s" "" .Values.ingress.tls.enabled }}
 {{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
-{{- $url := printf "http://%v/%v/proxy/status" $host (trimPrefix "/" .Values.ingress.django.path) }}
+{{- $url := printf "http%v://%v/%v/proxy/status" $ssl $host (trimPrefix "/" .Values.ingress.django.path) }}
 {{- printf "%v" (default $url .Values.external.nodeStatus) }}
 {{- end }}
 
 {{- define "metagrid.react.metagridUrl" -}}
 {{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
+{{- $ssl := ternary "s" "" .Values.ingress.tls.enabled }}
 {{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
-{{- $url := printf "http://%v/%v" $host .Values.ingress.django.path  }}
+{{- $url := printf "http%v://%v/%v" $ssl $host .Values.ingress.django.path  }}
 {{- printf "%v" (default $url .Values.external.metagridAPIUrl) }}
+{{- end }}
+
+{{- define "metagrid.podSpec" -}}
+{{- with .affinity }}
+affinity:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+containers:
+- name: {{ .name }}
+  {{- with .args }}
+  args:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .command }}
+  command:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .env }}
+  env:
+  {{- range $name, $value := . }}
+  - name: {{ $name }}
+    value: {{ tpl $value .TemplateValues | quote }}
+  {{- end }}
+  {{- end }}
+  {{- with .envFrom }}
+  envFrom:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  image: {{ .image.repository }}:{{ .image.tag }}
+  {{- with .image.pullPolicy }}
+  imagePullPolicy: {{ . }}
+  {{- end }}
+  {{- with .livenessProbe }}
+  livenessProbe:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .service }}
+  ports:
+  - name: {{ .name }}
+    containerPort: {{ .port }}
+    protocol: {{ default "TCP" .protocol }}
+  {{- end }}
+  {{- with .readinessProbe }}
+  readinessProbe:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .securityContext }}
+  securityContext:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .startupProbe }}
+  startupProbe:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .persistence }}
+  volumeMounts:
+  - mountPath: {{ .mountPath }}
+    name: {{ .name }}
+    readOnly: {{ default "false" .readOnly }}
+    {{- with .subPath }}
+    subPath: {{ . }}
+    {{- end }}
+  {{- end }}
+{{- with .dnsConfig }}
+dnsConfig:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .dnsPolicy }}
+dnsPolicy: {{ . }}
+{{- end }}
+{{- with .image.pullSecrets }}
+imagePullSecrets:
+- name: {{ include "metagrid.fullname" .TemplateValues }}
+{{- end }}
+{{- with .nodeSelector }}
+nodeSelector:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .preemptionPolicy }}
+preemptionPolicy: {{ . }}
+{{- end }}
+{{- with .priority }}
+priority: {{ . }}
+{{- end }}
+{{- with .priorityClassName }}
+priorityClassName: {{ . }}
+{{- end }}
+{{- with .restartPolicy }} 
+restartPolicy: {{ . }}
+{{- end }}
+{{- with .runtimeClassName }}
+runtimeClassName: {{ . }}
+{{- end }}
+{{- with .podSecurityContext }}
+securityContext:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .tolerations }}
+tolerations:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .persistence }}
+volumes:
+{{- if eq .type "configmap" }}
+- configMap:
+    name: {{ .resourceName }}
+{{- else if eq .type "secret" }}
+- secret:
+    secretName: {{ .resourceName }}
+{{- end }}
+  name: {{ .name }}
+{{- end }}
 {{- end }}

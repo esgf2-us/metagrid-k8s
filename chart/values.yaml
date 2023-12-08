@@ -32,6 +32,29 @@ external:
   # -- Google analytics tracking id, **OPTIONAL**
   googleAnalyticsTrackingID:
 
+# -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
+projects:
+
+# Example projects
+#
+# projects: |
+#   group_descriptions = {
+#     "General": "Least verbose, typically returns many results",
+#   }
+#   projects = [
+#     {
+#       "name": "Example",
+#       "full_name": "Example project",
+#       ...
+#       "facets_by_group": {
+#         "General": ["activity_id", "data_node"],
+#       }
+#     }
+#   ]
+
+# -- List of secrets used to pull images from private registries
+imagePullSecrets: []
+
 django:
   # -- Number of replicas
   replicaCount: 1
@@ -57,43 +80,44 @@ django:
     # -- Container tag
     tag: latest
 
-  # -- List of image pull secrets
-  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
+  
+  # -- Extra pod annotations
+  podAnnotations: {}
 
   migrateJob:
     # -- Enable database migration job
     enabled: true
 
-  # -- Extra pod annotations
-  podAnnotations: {}
+    restartPolicy: Never
 
-  # -- Pod security context
-  podSecurityContext: {}
-  # fsGroup: 2000
+  # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints
+  affinity: {}
 
-  # -- Container security context
-  securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-  # -- Pod resources requests/limits
+  # -- Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers)
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+
+  # -- Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context
+  securityContext: {}
+
+  # -- Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels
+  nodeSelector: {}
+
+  # -- Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy
+  preemptionPolicy:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority)
+  priority:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name
+  priorityClassName:
+
+  # -- Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context
+  podSecurityContext: {}
+
+  # -- Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration)
+  tolerations: []
 
   # -- Horizontal pod autoscaling configuration
   autoscaling:
@@ -102,15 +126,6 @@ django:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-
-  # -- Node selector
-  nodeSelector: {}
-
-  # -- Tolerations
-  tolerations: []
-
-  # -- Affinity
-  affinity: {}
 
   # -- Django service
   service:
@@ -131,39 +146,38 @@ react:
     # -- Container tag
     tag: latest
 
-  # -- List of image pull secrets
-  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
 
   # -- Extra pod annotations
   podAnnotations: {}
 
-  # -- Pod security context
-  podSecurityContext: {}
-  # fsGroup: 2000
+  # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints
+  affinity: {}
 
-  # -- Container security context
-  securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-  # -- Resources requests/limits
+  # -- Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers)
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+
+  # -- Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context
+  securityContext: {}
+
+  # -- Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels
+  nodeSelector: {}
+
+  # -- Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy
+  preemptionPolicy:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority)
+  priority:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name
+  priorityClassName:
+
+  # -- Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context
+  podSecurityContext: {}
+
+  # -- Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration)
+  tolerations: []
 
   # -- Horizontal Pod autoscaling configuration
   autoscaling:
@@ -172,15 +186,6 @@ react:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-
-  # -- Node selector
-  nodeSelector: {}
-
-  # -- Tolerations
-  tolerations: []
-
-  # -- Affinity
-  affinity: {}
 
   # -- React service
   service:
@@ -200,6 +205,8 @@ ingress:
   annotations: {}
   # -- Extra ingress labels
   labels: {}
+  # -- Override ingress class
+  className:
 
   # -- React ingress endpoint
   react:
@@ -214,6 +221,11 @@ ingress:
     host:
     # -- Endpoint path
     path: /metagrid-backend
+
+  tls:
+    enabled: false
+
+    secretName:
 
 # -- Postgresql database, **REQUIRED**
 postgresql:

@@ -1,40 +1,55 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "metagrid.fullname" . -}}
+{{- with .Values.ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-react
   labels:
-    {{- include "metagrid.labels" . | nindent 4 }}
+    {{- include "metagrid.labels" $ | nindent 4 }}
     app.kubernetes.io/component: react
-  {{- with .Values.ingress.labels }}
+  {{- with .labels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
+  {{- with .className }}
+  ingressClassName: {{ . }}
+  {{- end }}
   rules:
-    - host: {{ .Values.ingress.react.host | quote }}
+    {{- $hosts := list }}
+    {{- $hostCount := len (uniq (list .react.host .django.host)) }}
+    {{- $frontendPath := dict "path" .react.path "name" (printf "%s-react" $fullName) "port" $.Values.react.service.port }}
+    {{- $backendPath := dict "path" .django.path "name" (printf "%s-django" $fullName) "port" $.Values.django.service.port }}
+    {{- if eq $hostCount 1 }}
+    {{- $hosts = append $hosts (dict "host" .react.host "paths" (list $frontendPath $backendPath)) }}
+    {{- else }}
+    {{- $hosts = append $hosts (dict "host" .react.host "paths" (list $frontendPath)) }}
+    {{- $hosts = append $hosts (dict "host" .django.host "paths" (list $backendPath)) }}
+    {{- end }}
+    {{- range $hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: {{ .Values.ingress.react.path }}
-            pathType: ImplementationSpecific
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ default "ImplementationSpecific" .type }}
             backend:
               service:
-                name: {{ $fullName }}-react
+                name: {{ .name }}
                 port:
-                  number: {{ .Values.react.service.port }}
-    - host: {{ .Values.ingress.django.host | quote }}
-      http:
-        paths:
-          - path: {{ .Values.ingress.django.path }}
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-django
-                port:
-                  number: {{ .Values.django.service.port }}
+                  number: {{ .port }}
+          {{- end }}
+    {{- end }}
+  {{- if .tls.enabled }}
+  tls:
+  - hosts:
+      - {{ .react.host }}
+      - {{ .django.host }}
+    secretName: {{ .tls.secretName }}
+  {{- end }}
+{{- end }}
 {{- end }}
