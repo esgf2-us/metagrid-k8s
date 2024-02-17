@@ -107,7 +107,7 @@ Keycloak URL
 Django ALLOWED_HOSTS
 */}}
 {{- define "metagrid.django_allowed_hosts" -}}
-{{- join "," (list "0.0.0.0" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
+{{- join "," (list "0.0.0.0" "127.0.0.1" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
 {{- end }}
 
 {{/*
