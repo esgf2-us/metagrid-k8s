@@ -114,7 +114,7 @@ Django ALLOWED_HOSTS
 Django CORS_ORIGIN_WHITELIST
 */}}
 {{- define "metagrid.django.corsOriginWhitelist" -}}
-{{- $defaultValue := printf "http://%v-react:%v" (include "metagrid.fullname" .) .Values.react.service.port }}
+{{- $defaultValue := printf "http://127.0.0.1:%v" .Values.django.service.port }}
 {{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
 {{- end }}
 
