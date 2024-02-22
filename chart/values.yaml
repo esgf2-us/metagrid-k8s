@@ -74,7 +74,7 @@ django:
 
   image:
     # -- Django container URI
-    repository: ghcr.io/aims-group/metagrid-backend
+    repository: ghcr.io/esgf2-us/metagrid-backend
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
@@ -140,7 +140,7 @@ react:
 
   image:
     # -- React container URI
-    repository: ghcr.io/aims-group/metagrid-frontend
+    repository: ghcr.io/esgf2-us/metagrid-frontend
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
