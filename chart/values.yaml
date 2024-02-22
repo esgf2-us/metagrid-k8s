@@ -90,6 +90,8 @@ django:
     # -- Enable database migration job
     enabled: true
 
+    backoffLimit:
+
     restartPolicy: Never
 
   # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints

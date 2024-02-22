@@ -27,7 +27,7 @@ metadata:
       {{- toYaml . | nindent 8 }}
     {{- end }}
 spec:
-  backoffLimit: 0
+  backoffLimit: {{ default "4" .Values.django.migrateJob.backoffLimit }}
   template:
     spec:
       {{- $django := deepCopy .Values.django }}
