@@ -71,10 +71,15 @@ django:
   secretKey:
   # -- Override the gunicorn command arguments
   gunicornCmdArgs:
+  # -- Admin user
+  admin:
+    create: true
+    username: boutte3@llnl.gov
+    password: abcd1234
 
   image:
     # -- Django container URI
-    repository: ghcr.io/aims-group/metagrid-backend
+    repository: ghcr.io/esgf2-us/metagrid-backend
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
@@ -89,6 +94,8 @@ django:
   migrateJob:
     # -- Enable database migration job
     enabled: true
+
+    backoffLimit:
 
     restartPolicy: Never
 
@@ -140,7 +147,7 @@ react:
 
   image:
     # -- React container URI
-    repository: ghcr.io/aims-group/metagrid-frontend
+    repository: ghcr.io/esgf2-us/metagrid-frontend
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag

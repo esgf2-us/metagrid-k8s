@@ -107,14 +107,14 @@ Keycloak URL
 Django ALLOWED_HOSTS
 */}}
 {{- define "metagrid.django_allowed_hosts" -}}
-{{- join "," (list "0.0.0.0" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
+{{- join "," (list "0.0.0.0" "127.0.0.1" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
 {{- end }}
 
 {{/*
 Django CORS_ORIGIN_WHITELIST
 */}}
 {{- define "metagrid.django.corsOriginWhitelist" -}}
-{{- $defaultValue := printf "http://%v-react:%v" (include "metagrid.fullname" .) .Values.react.service.port }}
+{{- $defaultValue := printf "http://127.0.0.1:%v" .Values.django.service.port }}
 {{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
 {{- end }}
 
@@ -133,7 +133,7 @@ Django ESGF node status url
 {{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
 {{- $ssl := ternary "s" "" .Values.ingress.tls.enabled }}
 {{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
-{{- $url := printf "http%v://%v/%v" $ssl $host .Values.ingress.django.path  }}
+{{- $url := printf "http%v://%v%v" $ssl $host .Values.ingress.django.path  }}
 {{- printf "%v" (default $url .Values.external.metagridAPIUrl) }}
 {{- end }}
 
