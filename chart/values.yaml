@@ -71,6 +71,11 @@ django:
   secretKey:
   # -- Override the gunicorn command arguments
   gunicornCmdArgs:
+  # -- Admin user
+  admin:
+    create: true
+    username: boutte3@llnl.gov
+    password: abcd1234
 
   image:
     # -- Django container URI
