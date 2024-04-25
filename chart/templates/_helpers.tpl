@@ -93,48 +93,83 @@ postgres://{{ include "metagrid.pg_user" $ }}:{{ include "metagrid.pg_pass" $ }}
 {{- end }}
 
 {{/*
-Keycloak URL
+React base url
 */}}
-{{- define "metagrid.keycloak_url" -}}
-  {{- if .Values.keycloak.external -}}
-    {{- .Values.keycloak.url -}}
-  {{- else -}}
-    {{- include "common.names.fullname" .Subcharts.keycloak }}.{{ .Release.Namespace }}.svc.{{ .Subcharts.keycloak.Values.clusterDomain }}:{{ coalesce .Subcharts.keycloak.Values.service.ports.http .Subcharts.keycloak.Values.service.port }}
-  {{- end -}}
+{{- define "metagrid.react.baseUrl" -}}
+{{- $host := ternary .Values.ingress.react.host (printf "127.0.0.1:%v" .Values.react.service.port) .Values.ingress.enabled }}
+{{- $scheme := ternary "https" "http" (and .Values.ingress.enabled .Values.ingress.tls.enabled) }}
+{{- printf "%s" (default (printf "%s://%s" $scheme $host) .Values.baseUrl) }}
+{{- end }}
+
+{{/*
+React Url
+*/}}
+{{- define "metagrid.react.url" -}}
+{{- $baseUrl := include "metagrid.react.baseUrl" . }}
+{{- printf "%s%s" $baseUrl (printf "/%s" (trimPrefix "/" .Values.react.urlPath)) }}
+{{- end }}
+
+{{/*
+Django base url
+*/}}
+{{- define "metagrid.django.baseUrl" -}}
+{{- $host := ternary .Values.ingress.django.host (printf "127.0.0.1:%v" .Values.django.service.port) .Values.ingress.enabled }}
+{{- $scheme := ternary "https" "http" (and .Values.ingress.enabled .Values.ingress.tls.enabled) }}
+{{- printf "%s" (default (printf "%s://%s" $scheme $host) .Values.baseUrl) }}
+{{- end }}
+
+{{/*
+Django Url
+*/}}
+{{- define "metagrid.django.url" -}}
+{{- $baseUrl := include "metagrid.django.baseUrl" . }}
+{{- printf "%s%s" $baseUrl (printf "/%s" (trimPrefix "/" .Values.django.urlPath)) }}
+{{- end }}
+
+{{/*
+Django login url
+*/}}
+{{- define "metagrid.django.loginUrl" -}}
+{{- $baseUrl := include "metagrid.django.url" . }}
+{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.loginPath) }}
+{{- end }}
+
+{{/*
+Django logout url
+*/}}
+{{- define "metagrid.django.logoutUrl" -}}
+{{- $baseUrl := include "metagrid.django.url" . }}
+{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.logoutPath) }}
+{{- end }}
+
+{{/*
+Django login redirect
+*/}}
+{{- define "metagrid.django.loginRedirect" -}}
+{{- $baseUrl := include "metagrid.react.url" . }}
+{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.loginRedirect) }}
+{{- end }}
+
+{{/*
+Django logout redirect
+*/}}
+{{- define "metagrid.django.logoutRedirect" -}}
+{{- $baseUrl := include "metagrid.react.url" . }}
+{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.logoutRedirect) }}
 {{- end }}
 
 {{/*
 Django ALLOWED_HOSTS
 */}}
-{{- define "metagrid.django_allowed_hosts" -}}
-{{- join "," (list "0.0.0.0" "127.0.0.1" "localhost" .Values.ingress.react.host (printf "%s-django" (include "metagrid.fullname" .))) -}}
+{{- define "metagrid.djangoAllowedHosts" -}}
+{{- join "," (list "127.0.0.1" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) .Values.ingress.react.host ) -}}
 {{- end }}
 
 {{/*
 Django CORS_ORIGIN_WHITELIST
 */}}
 {{- define "metagrid.django.corsOriginWhitelist" -}}
-{{- $defaultValue := printf "http://127.0.0.1:%v" .Values.django.service.port }}
-{{- printf "%s" (default $defaultValue .Values.django.corsOriginWhitelist) }}
-{{- end }}
-
-{{/*
-Django ESGF node status url
-*/}}
-{{- define "metagrid.django.esgfNodeStatusUrl" -}}
-{{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
-{{- $ssl := ternary "s" "" .Values.ingress.tls.enabled }}
-{{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
-{{- $url := printf "http%v://%v/%v/proxy/status" $ssl $host (trimPrefix "/" .Values.ingress.django.path) }}
-{{- printf "%v" (default $url .Values.external.nodeStatus) }}
-{{- end }}
-
-{{- define "metagrid.react.metagridUrl" -}}
-{{- $service := printf "127.0.0.1:%v" .Values.django.service.port }}
-{{- $ssl := ternary "s" "" .Values.ingress.tls.enabled }}
-{{- $host := ternary .Values.ingress.django.host $service .Values.ingress.enabled }}
-{{- $url := printf "http%v://%v%v" $ssl $host .Values.ingress.django.path  }}
-{{- printf "%v" (default $url .Values.external.metagridAPIUrl) }}
+{{- printf "%s" (include "metagrid.react.baseUrl" .) }}
 {{- end }}
 
 {{- define "metagrid.podSpec" -}}
@@ -156,7 +191,7 @@ containers:
   env:
   {{- range $name, $value := . }}
   - name: {{ $name }}
-    value: {{ tpl $value .TemplateValues | quote }}
+    value: {{ tpl $value $.TemplateValues | quote }}
   {{- end }}
   {{- end }}
   {{- with .envFrom }}
