@@ -152,9 +152,6 @@ django:
   # -- Backend path prefix
   urlPath: metagrid-backend
 
-  loginPath: login/globus/
-  logoutPath: proxy/globus-logout/
-
   # -- Frontend path to redirect to on login
   loginRedirect: search
   # -- Frontend path to redirect to on logout

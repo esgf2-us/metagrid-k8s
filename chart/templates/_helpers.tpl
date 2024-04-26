@@ -131,7 +131,7 @@ Django login url
 */}}
 {{- define "metagrid.django.loginUrl" -}}
 {{- $baseUrl := include "metagrid.django.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.loginPath) }}
+{{- printf "%s/login/globus/" $baseUrl }}
 {{- end }}
 
 {{/*
@@ -139,7 +139,7 @@ Django logout url
 */}}
 {{- define "metagrid.django.logoutUrl" -}}
 {{- $baseUrl := include "metagrid.django.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.logoutPath) }}
+{{- printf "%s/proxy/globus-logout/" $baseUrl }}
 {{- end }}
 
 {{/*
