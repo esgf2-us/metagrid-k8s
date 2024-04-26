@@ -1,40 +1,45 @@
-external:
-  globus:
-    # -- Redirect URI used to obtain Globus authorization token
-    redirect:
-    # -- Client ID used to obtain Globus authorization token
+# -- Type of authentication to use, possible choices are globus (deafult), and keycloak
+authType: globus
+
+globus:
+  redirect: https://localhost:3000/cart/items
+  # -- Client ID for a globus thick client, the redirect will need to be the url of the frontend e.g. https://metagrid.io/metagrid
+  frontend:
     clientID:
-    # -- List of Globus nodes separated by commas
-    nodes:
-  # -- ESGF wget service URL
-  wget: https://esgf-node.llnl.gov/esg-search/wget
-  # -- ESGF search URL
-  search: https://esgf-node.llnl.gov/esg-search/search
-  # -- Override node status URL, may be required when using an ingress
-  # @default -- URL to the django backend node status path
-  nodeStatus:
-  # -- Override the metagrid API URL, may be required when using an ingress
-  # @default -- URL to the django backend api path
-  metagridAPIUrl:
-  # -- URL for the ESGF solr catalog
-  solr: https://esgf-fedtest.llnl.gov/solr
-  keycloak:
-    # -- URL of the ESGF Keycloak instance
-    url: https://login.esgf.io/
-    # -- Keycloak realm
-    realm: esgf
-    # -- Keycloak client ID
-    clientID: metagrid-llnl
-  # -- [Hotjar](https://www.hotjar.com/) tracking codes, **OPTIONAL**
-  hotjar:
-    id:
-    sv:
-  # -- Google analytics tracking id, **OPTIONAL**
-  googleAnalyticsTrackingID:
+  # -- Client ID/Secret for globus portal, the redirect will need to be the url of the backend e.g. https://metagrid.io/metagrid-backend/complete/globus/
+  backend:
+    clientID:
+    clientSecret:
+  nodes:
+    - aims3.llnl.gov
+    - esgf-data1.llnl.gov
+    - esgf-data2.llnl.gov
+
+keyCloak:
+  # -- Keycloak service url
+  url:
+  # -- Client realm
+  realm:
+  # -- Client ID
+  clientID:
+
+# -- ESGF wget service url
+wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
+
+# -- ESGF search service url
+searchUrl: https://esgf-node.llnl.gov/esg-search/search
+
+# -- ESGF node status url
+esgfNodeStatusUrl:
+
+# -- (Deprecated) ESGF solr url
+solrUrl: https://esgf-node.llnl.gov/solr
+
+# -- Base url for use when using an external TLS termination e.g. https://metagrid.io
+baseUrl:
 
 # -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
 projects:
-
 # Example projects
 #
 # projects: |
@@ -55,92 +60,28 @@ projects:
 # -- List of secrets used to pull images from private registries
 imagePullSecrets: []
 
-django:
-  # -- Number of replicas
-  replicaCount: 1
-
-  # -- Enable Django debugging
-  debug: false
-  # -- Relative path to the Django management panel
-  adminURL: panel/
-  # -- Override CORS origin whitelist
-  # @default -- to django backend service url
-  corsOriginWhitelist:
-  # -- Django secret key, recommended to set a value rather than use the random default value
-  # @default -- a random 50 character string
-  secretKey:
-  # -- Override the gunicorn command arguments
-  gunicornCmdArgs:
-
-  image:
-    # -- Django container URI
-    repository: ghcr.io/aims-group/metagrid-backend
-    # -- Image pull policy
-    pullPolicy: Always
-    # -- Container tag
-    tag: latest
-
-  nameOverride: ""
-  fullnameOverride: ""
-  
-  # -- Extra pod annotations
-  podAnnotations: {}
-
-  migrateJob:
-    # -- Enable database migration job
-    enabled: true
-
-    restartPolicy: Never
-
-  # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints
-  affinity: {}
-
-  # -- Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers)
-  resources: {}
-
-  # -- Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context
-  securityContext: {}
-
-  # -- Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels
-  nodeSelector: {}
-
-  # -- Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy
-  preemptionPolicy:
-
-  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority)
-  priority:
-
-  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name
-  priorityClassName:
-
-  # -- Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context
-  podSecurityContext: {}
-
-  # -- Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration)
-  tolerations: []
-
-  # -- Horizontal pod autoscaling configuration
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
-  # -- Django service
-  service:
-    # -- Service type
-    type: ClusterIP
-    # -- Service port
-    port: 5000
-
 react:
+  # -- Hotjar configuration
+  hotjarID:
+  hotjarSV:
+
+  # -- Google analytics ID
+  googleAnalyticsID:
+
+  # -- Custom url for external metagrid backend
+  backendUrl:
+
+  # -- Frontend path prefix
+  urlPath: /metagrid
+
+  previousUrlPath:
+
   # -- Number of replicas
   replicaCount: 1
 
   image:
     # -- React container URI
-    repository: ghcr.io/aims-group/metagrid-frontend
+    repository: ghcr.io/esgf2-us/metagrid-frontend
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
@@ -198,6 +139,103 @@ react:
   monitoring:
     enabled: false
 
+django:
+  # -- Django [secret](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-SECRET_KEY) key
+  secretKey:
+  # -- Path for the admin panel
+  adminUrl: panel/
+  # -- Enable django debugging
+  debug: false
+  # -- (list) Custom gunicorn CLI arguments
+  gunicornCmdArgs:
+
+  # -- Backend path prefix
+  urlPath: metagrid-backend
+
+  # -- Frontend path to redirect to on login
+  loginRedirect: search
+  # -- Frontend path to redirect to on logout
+  logoutRedirect: search
+
+  admin:
+    # -- Enable creating initial admin user
+    create: false
+    # -- Admin username
+    username: admin
+    # -- Admin password
+    password:
+    # -- Admin email
+    email:
+
+  migrateJob:
+    # -- Enable migrate database job
+    enabled: true
+
+    # -- (int) Backoff limit for migrate job
+    backoffLimit:
+
+    # -- Restart policy for migrate job
+    restartPolicy: Never
+
+  # -- Number of replicas
+  replicaCount: 1
+
+  image:
+    # -- Django container URI
+    repository: ghcr.io/esgf2-us/metagrid-backend
+    # -- Image pull policy
+    pullPolicy: Always
+    # -- Container tag
+    tag: latest
+
+  nameOverride: ""
+  fullnameOverride: ""
+  
+  # -- Extra pod annotations
+  podAnnotations: {}
+
+  # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints
+  affinity: {}
+
+  # -- Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers)
+  resources: {}
+
+  # -- Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context
+  securityContext: {}
+
+  # -- Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels
+  nodeSelector: {}
+
+  # -- Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy
+  preemptionPolicy:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority)
+  priority:
+
+  # -- Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name
+  priorityClassName:
+
+  # -- Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context
+  podSecurityContext: {}
+
+  # -- Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration)
+  tolerations: []
+
+  # -- Horizontal pod autoscaling configuration
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  # -- Django service
+  service:
+    # -- Service type
+    type: ClusterIP
+    # -- Service port
+    port: 5000
+
 ingress:
   # -- Enable ingress
   enabled: false
@@ -212,15 +250,11 @@ ingress:
   react:
     # -- Endpoint host
     host:
-    # -- Endpoint path
-    path: /metagrid
 
   # -- Django ingress endpoint
   django:
     # -- Endpoint host
     host:
-    # -- Endpoint path
-    path: /metagrid-backend
 
   tls:
     enabled: false

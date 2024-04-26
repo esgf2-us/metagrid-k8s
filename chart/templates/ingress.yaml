@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-react
+  name: {{ $fullName }}
   labels:
     {{- include "metagrid.labels" $ | nindent 4 }}
     app.kubernetes.io/component: react
@@ -22,8 +22,10 @@ spec:
   rules:
     {{- $hosts := list }}
     {{- $hostCount := len (uniq (list .react.host .django.host)) }}
-    {{- $frontendPath := dict "path" .react.path "name" (printf "%s-react" $fullName) "port" $.Values.react.service.port }}
-    {{- $backendPath := dict "path" .django.path "name" (printf "%s-django" $fullName) "port" $.Values.django.service.port }}
+    {{- $frontendUrlPath := printf "/%v" (trimPrefix "/" $.Values.react.urlPath) }}
+    {{- $backendUrlPath := printf "/%v" (trimPrefix "/" $.Values.django.urlPath) }}
+    {{- $frontendPath := dict "path" $frontendUrlPath "name" (printf "%s-react" $fullName) "port" $.Values.react.service.port }}
+    {{- $backendPath := dict "path" $backendUrlPath "name" (printf "%s-django" $fullName) "port" $.Values.django.service.port }}
     {{- if eq $hostCount 1 }}
     {{- $hosts = append $hosts (dict "host" .react.host "paths" (list $frontendPath $backendPath)) }}
     {{- else }}

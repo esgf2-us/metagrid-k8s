@@ -20,20 +20,23 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     {{- with .Values.django.podAnnotations }}
       {{- toYaml . | nindent 8 }}
     {{- end }}
 spec:
-  backoffLimit: 0
+  backoffLimit: {{ default "4" .Values.django.migrateJob.backoffLimit }}
   template:
     spec:
       {{- $django := deepCopy .Values.django }}
       {{- $_ := set $django "name" "migrate" }}
       {{- $_ := set $django.image "pullSecrets" .Values.imagePullSecrets }}
-      {{- $_ := set $django "args" (list "python" "manage.py" "migrate" "--settings=$(DJANGO_SETTINGS_MODULE)") }}
+      {{- $_ := set $django "args" (list "/bin/bash" "-c" "python manage.py migrate --settings=$(DJANGO_SETTINGS_MODULE)") }}
+      {{- if .Values.django.admin.create }}
+      {{- $_ := set $django "args" (list "/bin/bash" "-c" "python manage.py migrate --settings=$(DJANGO_SETTINGS_MODULE) && python manage.py createsuperuser --noinput") }}
+      {{- end }}
       {{- $config := dict "configMapRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
       {{- $secret := dict "secretRef" (dict "name" (printf "%s-django" (include "metagrid.fullname" .))) }}
       {{- $_ := set $django "envFrom" (list $config $secret) }}
