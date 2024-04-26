@@ -59,14 +59,21 @@ kubectl exec -it $(kubectl get pod -oname -l app.kubernetes.io/component=django)
 kubectl exec -it $(kubectl get pod -oname -l app.kubernetes.io/component=django) -- python manage.py migrate projects
 ```
 
-### External TLS termination
-The `nodeStatus` and `metagridAPIUrl` values by default are automatically generated. If using an upstream reverse-proxy that handles TLS, then these urls will be incorrect and cause
-the application to not work correctly.
-
-To fix this both `nodeStatus` and `metagridAPIUrl` need to be overwritten, see the following example.
+### Create initial admin
+To create an initial backend user, enable the following and fill out the details.
 
 ```
-external:
-  nodeStatus: https://<host>/metagrid-backend/proxy/status
-  metagridAPIUrl: https://<host>/metagrid-backend
+django:
+  admin:
+    create: true
+    username: <username>
+    password: <password>
+    email: <email>
+```
+
+### External TLS termination
+When using external TLS termination e.g. Traefik, Nginx, etc, the chart will need to be configured with the external url.
+
+```
+baseUrl: https://metagrid.io
 ```

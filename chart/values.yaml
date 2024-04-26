@@ -1,13 +1,12 @@
+# -- Type of authentication to use, possible choices are globus (deafult), and keycloak
 authType: globus
 
 globus:
   redirect: https://localhost:3000/cart/items
-  # thick/native client
-  # redirect https://localhost:3000/
+  # -- Client ID for a globus thick client, the redirect will need to be the url of the frontend e.g. https://metagrid.io/metagrid
   frontend:
     clientID:
-  # portal
-  # redirect https://localhost:5000/metagrid-backend/complete/globus  
+  # -- Client ID/Secret for globus portal, the redirect will need to be the url of the backend e.g. https://metagrid.io/metagrid-backend/complete/globus/
   backend:
     clientID:
     clientSecret:
@@ -17,18 +16,26 @@ globus:
     - esgf-data2.llnl.gov
 
 keyCloak:
+  # -- Keycloak service url
   url:
+  # -- Client realm
   realm:
+  # -- Client ID
   clientID:
 
+# -- ESGF wget service url
 wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
 
+# -- ESGF search service url
 searchUrl: https://esgf-node.llnl.gov/esg-search/search
 
+# -- ESGF node status url
 esgfNodeStatusUrl:
 
+# -- (Deprecated) ESGF solr url
 solrUrl: https://esgf-node.llnl.gov/solr
 
+# -- Base url for use when using an external TLS termination e.g. https://metagrid.io
 baseUrl:
 
 # -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
@@ -54,15 +61,19 @@ projects:
 imagePullSecrets: []
 
 react:
+  # -- Hotjar configuration
   hotjarID:
   hotjarSV:
 
+  # -- Google analytics ID
   googleAnalyticsID:
 
-  # Provide custom Url to metagrid backend
+  # -- Custom url for external metagrid backend
   backendUrl:
 
+  # -- Frontend path prefix
   urlPath: /metagrid
+
   previousUrlPath:
 
   # -- Number of replicas
@@ -129,30 +140,44 @@ react:
     enabled: false
 
 django:
+  # -- Django [secret](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-SECRET_KEY) key
   secretKey:
+  # -- Path for the admin panel
   adminUrl: panel/
+  # -- Enable django debugging
   debug: false
+  # -- (list) Custom gunicorn CLI arguments
   gunicornCmdArgs:
 
+  # -- Backend path prefix
   urlPath: metagrid-backend
 
   loginPath: login/globus/
   logoutPath: proxy/globus-logout/
 
+  # -- Frontend path to redirect to on login
   loginRedirect: search
+  # -- Frontend path to redirect to on logout
   logoutRedirect: search
 
   admin:
+    # -- Enable creating initial admin user
     create: false
-    username:
+    # -- Admin username
+    username: admin
+    # -- Admin password
     password:
+    # -- Admin email
     email:
 
   migrateJob:
+    # -- Enable migrate database job
     enabled: true
 
+    # -- (int) Backoff limit for migrate job
     backoffLimit:
 
+    # -- Restart policy for migrate job
     restartPolicy: Never
 
   # -- Number of replicas
