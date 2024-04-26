@@ -39,50 +39,32 @@ helm delete my-release
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| external.globus.redirect | string | `nil` | Redirect URI used to obtain Globus authorization token |
-| external.globus.clientID | string | `nil` | Client ID used to obtain Globus authorization token |
-| external.globus.nodes | string | `nil` | List of Globus nodes separated by commas |
-| external.wget | string | `"https://esgf-node.llnl.gov/esg-search/wget"` | ESGF wget service URL |
-| external.search | string | `"https://esgf-node.llnl.gov/esg-search/search"` | ESGF search URL |
-| external.nodeStatus | string | URL to the django backend node status path | Override node status URL, may be required when using an ingress |
-| external.metagridAPIUrl | string | URL to the django backend api path | Override the metagrid API URL, may be required when using an ingress |
-| external.solr | string | `"https://esgf-fedtest.llnl.gov/solr"` | URL for the ESGF solr catalog |
-| external.keycloak.url | string | `"https://login.esgf.io/"` | URL of the ESGF Keycloak instance |
-| external.keycloak.realm | string | `"esgf"` | Keycloak realm |
-| external.keycloak.clientID | string | `"metagrid-llnl"` | Keycloak client ID |
-| external.hotjar | object | `{"id":null,"sv":null}` | [Hotjar](https://www.hotjar.com/) tracking codes, **OPTIONAL** |
-| external.googleAnalyticsTrackingID | string | `nil` | Google analytics tracking id, **OPTIONAL** |
+| authType | string | `"globus"` |  |
+| globus.redirect | string | `"https://localhost:3000/cart/items"` |  |
+| globus.frontend.clientID | string | `nil` |  |
+| globus.backend.clientID | string | `nil` |  |
+| globus.backend.clientSecret | string | `nil` |  |
+| globus.nodes[0] | string | `"aims3.llnl.gov"` |  |
+| globus.nodes[1] | string | `"esgf-data1.llnl.gov"` |  |
+| globus.nodes[2] | string | `"esgf-data2.llnl.gov"` |  |
+| keyCloak.url | string | `nil` |  |
+| keyCloak.realm | string | `nil` |  |
+| keyCloak.clientID | string | `nil` |  |
+| wgetApiUrl | string | `"https://esgf-node.llnl.gov/esg-search/wget"` |  |
+| searchUrl | string | `"https://esgf-node.llnl.gov/esg-search/search"` |  |
+| esgfNodeStatusUrl | string | `nil` |  |
+| solrUrl | string | `"https://esgf-node.llnl.gov/solr"` |  |
+| baseUrl | string | `nil` |  |
 | projects | string | `nil` | Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py) |
 | imagePullSecrets | list | `[]` | List of secrets used to pull images from private registries |
-| django.replicaCount | int | `1` | Number of replicas |
-| django.debug | bool | `false` | Enable Django debugging |
-| django.adminURL | string | `"panel/"` | Relative path to the Django management panel |
-| django.corsOriginWhitelist | string | to django backend service url | Override CORS origin whitelist |
-| django.secretKey | string | a random 50 character string | Django secret key, recommended to set a value rather than use the random default value |
-| django.gunicornCmdArgs | string | `nil` | Override the gunicorn command arguments |
-| django.image.repository | string | `"ghcr.io/aims-group/metagrid-backend"` | Django container URI |
-| django.image.pullPolicy | string | `"Always"` | Image pull policy |
-| django.image.tag | string | `"latest"` | Container tag |
-| django.nameOverride | string | `""` |  |
-| django.fullnameOverride | string | `""` |  |
-| django.podAnnotations | object | `{}` | Extra pod annotations |
-| django.migrateJob.enabled | bool | `true` | Enable database migration job |
-| django.migrateJob.restartPolicy | string | `"Never"` |  |
-| django.affinity | object | `{}` | [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints |
-| django.resources | object | `{}` | Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers) |
-| django.securityContext | object | `{}` | Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context |
-| django.nodeSelector | object | `{}` | Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels |
-| django.preemptionPolicy | string | `nil` | Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy |
-| django.priority | string | `nil` | Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority) |
-| django.priorityClassName | string | `nil` | Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name |
-| django.podSecurityContext | object | `{}` | Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context |
-| django.tolerations | list | `[]` | Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration) |
-| django.autoscaling | object | `{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80}` | Horizontal pod autoscaling configuration |
-| django.service | object | `{"port":5000,"type":"ClusterIP"}` | Django service |
-| django.service.type | string | `"ClusterIP"` | Service type |
-| django.service.port | int | `5000` | Service port |
+| react.hotjarID | string | `nil` |  |
+| react.hotjarSV | string | `nil` |  |
+| react.googleAnalyticsID | string | `nil` |  |
+| react.backendUrl | string | `nil` |  |
+| react.urlPath | string | `"/metagrid"` |  |
+| react.previousUrlPath | string | `nil` |  |
 | react.replicaCount | int | `1` | Number of replicas |
-| react.image.repository | string | `"ghcr.io/aims-group/metagrid-frontend"` | React container URI |
+| react.image.repository | string | `"ghcr.io/esgf2-us/metagrid-frontend"` | React container URI |
 | react.image.pullPolicy | string | `"Always"` | Container pull policy |
 | react.image.tag | string | `"latest"` | Container tag |
 | react.nameOverride | string | `""` |  |
@@ -102,16 +84,50 @@ helm delete my-release
 | react.service.type | string | `"ClusterIP"` | Service type |
 | react.service.port | int | `3000` | Service port |
 | react.monitoring | object | `{"enabled":false}` | Prometheus monitoring |
+| django.secretKey | string | `nil` |  |
+| django.adminUrl | string | `"panel/"` |  |
+| django.debug | bool | `false` |  |
+| django.gunicornCmdArgs | string | `nil` |  |
+| django.urlPath | string | `"metagrid-backend"` |  |
+| django.loginPath | string | `"login/globus/"` |  |
+| django.logoutPath | string | `"proxy/globus-logout/"` |  |
+| django.loginRedirect | string | `"search"` |  |
+| django.logoutRedirect | string | `"search"` |  |
+| django.admin.create | bool | `false` |  |
+| django.admin.username | string | `nil` |  |
+| django.admin.password | string | `nil` |  |
+| django.admin.email | string | `nil` |  |
+| django.migrateJob.enabled | bool | `true` |  |
+| django.migrateJob.backoffLimit | string | `nil` |  |
+| django.migrateJob.restartPolicy | string | `"Never"` |  |
+| django.replicaCount | int | `1` | Number of replicas |
+| django.image.repository | string | `"ghcr.io/esgf2-us/metagrid-backend"` | Django container URI |
+| django.image.pullPolicy | string | `"Always"` | Image pull policy |
+| django.image.tag | string | `"latest"` | Container tag |
+| django.nameOverride | string | `""` |  |
+| django.fullnameOverride | string | `""` |  |
+| django.podAnnotations | object | `{}` | Extra pod annotations |
+| django.affinity | object | `{}` | [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity), pod node scheduling constraints |
+| django.resources | object | `{}` | Container [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers) |
+| django.securityContext | object | `{}` | Container [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) context |
+| django.nodeSelector | object | `{}` | Node [selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) labels |
+| django.preemptionPolicy | string | `nil` | Pod [preemption](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#preemption) policy |
+| django.priority | string | `nil` | Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#pod-priority) |
+| django.priorityClassName | string | `nil` | Pod scheduling [priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) class name |
+| django.podSecurityContext | object | `{}` | Pod [security](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) context |
+| django.tolerations | list | `[]` | Pod [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration) |
+| django.autoscaling | object | `{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80}` | Horizontal pod autoscaling configuration |
+| django.service | object | `{"port":5000,"type":"ClusterIP"}` | Django service |
+| django.service.type | string | `"ClusterIP"` | Service type |
+| django.service.port | int | `5000` | Service port |
 | ingress.enabled | bool | `false` | Enable ingress |
 | ingress.annotations | object | `{}` | Extra ingress annotations |
 | ingress.labels | object | `{}` | Extra ingress labels |
 | ingress.className | string | `nil` | Override ingress class |
-| ingress.react | object | `{"host":null,"path":"/metagrid"}` | React ingress endpoint |
+| ingress.react | object | `{"host":null}` | React ingress endpoint |
 | ingress.react.host | string | `nil` | Endpoint host |
-| ingress.react.path | string | `"/metagrid"` | Endpoint path |
-| ingress.django | object | `{"host":null,"path":"/metagrid-backend"}` | Django ingress endpoint |
+| ingress.django | object | `{"host":null}` | Django ingress endpoint |
 | ingress.django.host | string | `nil` | Endpoint host |
-| ingress.django.path | string | `"/metagrid-backend"` | Endpoint path |
 | ingress.tls.enabled | bool | `false` |  |
 | ingress.tls.secretName | string | `nil` |  |
 | postgresql | object | `{"enabled":true,"persistence":{"enabled":false},"pgpool":{"adminPassword":"pgpooladminpass","containerSecurityContext":{"enabled":false},"podSecurityContext":{"enabled":false}},"postgresql":{"containerSecurityContext":{"enabled":false},"password":"pgpass","podSecurityContext":{"enabled":false},"replicaCount":1,"repmgrPassword":"repmgrpass"}}` | Postgresql database, **REQUIRED** |
