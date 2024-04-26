@@ -90,6 +90,12 @@ react:
   nameOverride: ""
   fullnameOverride: ""
 
+  # -- Extra labels
+  labels: {}
+
+  # -- Extra annotations
+  annotations: {}
+
   # -- Extra pod annotations
   podAnnotations: {}
 
@@ -190,7 +196,13 @@ django:
 
   nameOverride: ""
   fullnameOverride: ""
-  
+
+  # -- Extra labels
+  labels: {}
+
+  # -- Extra annotations
+  annotations: {}
+
   # -- Extra pod annotations
   podAnnotations: {}
 

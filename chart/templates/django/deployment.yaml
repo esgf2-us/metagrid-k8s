@@ -5,6 +5,16 @@ metadata:
   labels:
     {{- include "metagrid.labels" . | nindent 4 }}
     app.kubernetes.io/component: django
+    {{- with .Values.django.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- $configmap := include (print $.Template.BasePath "/django/configmap.yaml") . }}
+    {{- $secret := include (print $.Template.BasePath "/django/secret.yaml") . }}
+    checksum/config: {{ print $configmap $secret | sha256sum }}
+    {{- with .Values.django.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if not .Values.django.autoscaling.enabled }}
   replicas: {{ .Values.django.replicaCount }}
