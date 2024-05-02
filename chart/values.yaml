@@ -85,7 +85,7 @@ react:
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: latest
+    tag: v1.1.0-beta
 
   nameOverride: ""
   fullnameOverride: ""
@@ -192,7 +192,7 @@ django:
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: latest
+    tag: v1.1.0-beta
 
   nameOverride: ""
   fullnameOverride: ""
