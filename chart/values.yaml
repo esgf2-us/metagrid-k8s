@@ -85,10 +85,16 @@ react:
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: latest
+    tag: v1.1.1-pre
 
   nameOverride: ""
   fullnameOverride: ""
+
+  # -- Extra labels
+  labels: {}
+
+  # -- Extra annotations
+  annotations: {}
 
   # -- Extra pod annotations
   podAnnotations: {}
@@ -186,11 +192,17 @@ django:
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: latest
+    tag: v1.1.1-pre
 
   nameOverride: ""
   fullnameOverride: ""
-  
+
+  # -- Extra labels
+  labels: {}
+
+  # -- Extra annotations
+  annotations: {}
+
   # -- Extra pod annotations
   podAnnotations: {}
 
