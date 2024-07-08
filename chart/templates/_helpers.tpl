@@ -176,7 +176,7 @@ Django CORS_ORIGIN_WHITELIST
 {{- with .affinity }}
 affinity:
 {{- toYaml . | nindent 2 }}
-{{- end }}
+{{- end -}}
 containers:
 - name: {{ .name }}
   {{- with .args }}
