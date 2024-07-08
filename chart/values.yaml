@@ -36,7 +36,7 @@ esgfNodeStatusUrl:
 solrUrl: https://esgf-node.llnl.gov/solr
 
 # -- Base url for use when using an external TLS termination e.g. https://metagrid.io
-baseUrl:
+baseUrl: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
 
 # -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
 projects:
@@ -69,7 +69,7 @@ react:
   googleAnalyticsID:
 
   # -- Custom url for external metagrid backend
-  backendUrl:
+  backendUrl: http://127.0.0.1:5000
 
   # -- Frontend path prefix
   urlPath: /metagrid
