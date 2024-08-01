@@ -30,13 +30,13 @@ wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
 searchUrl: https://esgf-node.llnl.gov/esg-search/search
 
 # -- ESGF node status url
-esgfNodeStatusUrl:
+esgfNodeStatusUrl: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
 
 # -- (Deprecated) ESGF solr url
 solrUrl: https://esgf-node.llnl.gov/solr
 
 # -- Base url for use when using an external TLS termination e.g. https://metagrid.io
-baseUrl: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
+baseUrl:
 
 # -- Customize projects loaded during the initial migration, this is the value stored in [initial_projects_data.py](https://github.com/aims-group/metagrid/blob/master/backend/metagrid/initial_projects_data.py)
 projects:
