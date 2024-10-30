@@ -1,3 +1,4 @@
 chart/charts
 **/.cr-release-packages/**
+.cr-index/
 temp/
