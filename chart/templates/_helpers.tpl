@@ -198,7 +198,7 @@ containers:
   envFrom:
   {{- toYaml . | nindent 4 }}
   {{- end }}
-  image: {{ .image.repository }}:{{ .image.tag }}
+  image: {{ .image.repository }}:{{ default .TemplateValues.Chart.AppVersion .image.tag }}
   {{- with .image.pullPolicy }}
   imagePullPolicy: {{ . }}
   {{- end }}

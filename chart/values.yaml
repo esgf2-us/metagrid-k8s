@@ -30,7 +30,7 @@ wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
 searchUrl: https://esgf-node.llnl.gov/esg-search/search
 
 # -- ESGF node status url
-esgfNodeStatusUrl:
+esgfNodeStatusUrl: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
 
 # -- (Deprecated) ESGF solr url
 solrUrl: https://esgf-node.llnl.gov/solr
@@ -69,7 +69,7 @@ react:
   googleAnalyticsID:
 
   # -- Custom url for external metagrid backend
-  backendUrl:
+  backendUrl: http://127.0.0.1:5000
 
   # -- Frontend path prefix
   urlPath: /metagrid
@@ -85,7 +85,7 @@ react:
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: v1.1.1-pre
+    tag:
 
   nameOverride: ""
   fullnameOverride: ""
@@ -192,7 +192,7 @@ django:
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
-    tag: v1.1.1-pre
+    tag:
 
   nameOverride: ""
   fullnameOverride: ""

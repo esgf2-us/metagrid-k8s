@@ -37,7 +37,7 @@ spec:
       {{- $_ := set $react "env" (mustMerge (default dict $react.env) (dict "SKIP_NGINX_CONF" "true" "DEBUG" "true" "PUBLIC_URL" .Values.react.urlPath)) }}
       {{- $config := dict "configMapRef" (dict "name" (printf "%s-react" (include "metagrid.fullname" .))) }}
       {{- $_ := set $react "envFrom" (list $config) }}
-      {{- $_ := set $react "TemplateValues" (deepCopy .Values) }}
+      {{- $_ := set $react "TemplateValues" . }}
       {{- $_ := set $react.service "name" "http" }}
       {{- $_ := set $react "livenessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.react.urlPath)) }}
       {{- $_ := set $react "readinessProbe" (dict "httpGet" (dict "port" "http" "path" .Values.react.urlPath)) }}
