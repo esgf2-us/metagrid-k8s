@@ -3,7 +3,7 @@ name: metagrid
 description: A Helm chart for the Metagrid frontend/backend
 type: application
 version: 0.1.5
-appVersion: "1.1.2-pre"
+appVersion: "1.2.0"
 home: https://github.com/esgf2-us/metagrid-k8s
 sources:
   - https://github.com/aims-group/metagrid
