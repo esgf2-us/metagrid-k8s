@@ -85,7 +85,6 @@ react:
     # -- Container pull policy
     pullPolicy: Always
     # -- Container tag
-    # tag: 1.1.2-pre
     tag:
 
   nameOverride: ""
@@ -193,7 +192,6 @@ django:
     # -- Image pull policy
     pullPolicy: Always
     # -- Container tag
-    # tag: 1.1.2-pre
     tag:
 
   nameOverride: ""
