@@ -122,8 +122,12 @@ Django base url
 Django Url
 */}}
 {{- define "metagrid.django.url" -}}
+{{- if .Values.react.backendUrl }}
+{{- printf "%s" .Values.react.backendUrl }}
+{{- else }}
 {{- $baseUrl := include "metagrid.django.baseUrl" . }}
 {{- printf "%s%s" $baseUrl (printf "/%s" (trimPrefix "/" .Values.django.urlPath)) }}
+{{- end }}
 {{- end }}
 
 {{/*
