@@ -150,16 +150,22 @@ Django logout url
 Django login redirect
 */}}
 {{- define "metagrid.django.loginRedirect" -}}
-{{- $baseUrl := include "metagrid.react.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.loginRedirect) }}
+{{- $path := "" }}
+{{- with .Values.django.loginRedirect }}
+{{- $path = printf "/%s" (trimPrefix "/" .) }}
+{{- end }}
+{{- printf "%s%s" (include "metagrid.react.url" .) $path }}
 {{- end }}
 
 {{/*
 Django logout redirect
 */}}
 {{- define "metagrid.django.logoutRedirect" -}}
-{{- $baseUrl := include "metagrid.react.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.logoutRedirect) }}
+{{- $path := "" }}
+{{- with .Values.django.logoutRedirect }}
+{{- $path = printf "/%s" (trimPrefix "/" .) }}
+{{- end }}
+{{- printf "%s%s" (include "metagrid.react.url" .) $path }}
 {{- end }}
 
 {{/*
