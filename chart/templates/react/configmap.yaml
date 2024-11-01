@@ -35,6 +35,10 @@ data:
     server {
       listen {{ .Values.react.service.port }};
 
+      location / {
+        return 301 /metagrid;
+      }
+
       location ^~ {{ printf "/%s" (trimPrefix "/" .Values.react.urlPath) }} {
         alias   /usr/share/nginx/html/;
         index  index.html index.htm;
