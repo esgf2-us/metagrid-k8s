@@ -172,7 +172,17 @@ Django logout redirect
 Django ALLOWED_HOSTS
 */}}
 {{- define "metagrid.djangoAllowedHosts" -}}
-{{- join "," (list "127.0.0.1" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) .Values.ingress.react.host ) -}}
+{{- $allowed_hosts := list "127.0.0.1" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) }}
+
+{{- if and .Values.ingress.enabled .Values.ingress.react.host }}
+{{- $allowed_hosts = append $allowed_hosts .Values.ingress.react.host }}
+{{- end }}
+
+{{- if .Values.baseUrl }}
+{{- $allowed_hosts = append $allowed_hosts (last (regexSplit "/" .Values.baseUrl -1)) }}
+{{- end }}
+
+{{- join "," $allowed_hosts -}}
 {{- end }}
 
 {{/*
