@@ -8,8 +8,9 @@ metadata:
 data:
   RELEASE: production
   PUBLIC_URL: {{ .Values.react.urlPath }}
-  REACT_APP_METAGRID_API_URL: {{ include "metagrid.django.url" . }}
   REACT_APP_PREVIOUS_URL: {{ default "" .Values.react.previousUrlPath }}
+  REACT_APP_METAGRID_API_URL: {{ include "metagrid.django.url" . }}
+  REACT_APP_AUTHENTICATION_METHOD: {{ .Values.authType }}
   {{- if eq .Values.authType "globus" }}
   REACT_APP_GLOBUS_REDIRECT: {{ .Values.globus.frontend.redirect }}
   REACT_APP_CLIENT_ID: {{ .Values.globus.frontend.clientID }}
@@ -23,13 +24,13 @@ data:
   REACT_APP_KEYCLOAK_URL: {{ .url }}
   REACT_APP_KEYCLOAK_CLIENT_ID: {{ .clientID }}
   {{- end }}
+  REACT_APP_DJANGO_LOGIN_URL: {{ include "metagrid.django.loginUrl" . }}
+  REACT_APP_DJANGO_LOGOUT_URL: {{ include "metagrid.django.logoutUrl" . }}
   {{- with .Values.react.hotjar }}
   REACT_APP_HOTJAR_ID: {{ .id | quote }}
   REACT_APP_HOTJAR_SV: {{ .sv | quote }}
   {{- end }}
-  REACT_APP_DJANGO_LOGIN_URL: {{ include "metagrid.django.loginUrl" . }}
-  REACT_APP_DJANGO_LOGOUT_URL: {{ include "metagrid.django.logoutUrl" . }}
-  REACT_APP_AUTHENTICATION_METHOD: {{ .Values.authType }}
+  REACT_APP_GOOGLE_ANALYTICS_TRACKING_ID: {{ default "" .Values.react.googleAnalyticsID }}
   # TODO default metagrid nginx adds location for PREVIOUS_URL and breaks reverse proxy
   default.conf: |
     server {
