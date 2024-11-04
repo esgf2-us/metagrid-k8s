@@ -27,9 +27,10 @@ data:
   DJANGO_LOGOUT_REDIRECT_URL: {{ include "metagrid.django.logoutRedirect" . | quote }}
   GLOBUS_CLIENT_KEY: {{ .Values.globus.backend.clientID }}
   GLOBUS_CLIENT_SECRET: {{ .Values.globus.backend.clientSecret }}
-  # REACT_APP_WGET_API_URL: {{ .Values.wgetApiUrl }}
-  # REACT_APP_SEARCH_URL: {{ .Values.searchUrl }}
-  # REACT_APP_ESGF_NODE_STATUS_URL: {{ .Values.esgfNodeStatusUrl }}
-  # REACT_APP_ESGF_SOLR_URL: {{ .Values.solrUrl }}
+  # Required by api_proxy
+  REACT_APP_WGET_API_URL: {{ .Values.wgetApiUrl }}
+  REACT_APP_SEARCH_URL: {{ .Values.searchUrl }}
+  REACT_APP_ESGF_NODE_STATUS_URL: {{ .Values.esgfNodeStatusUrl }}
+  REACT_APP_ESGF_SOLR_URL: {{ .Values.solrUrl }}
   POSTGRES_HOST: {{ include "metagrid.pg_host" . }}
   POSTGRES_PORT: {{ include "metagrid.pg_port" . | quote }}
