@@ -6,28 +6,28 @@ metadata:
     {{- include "metagrid.labels" . | nindent 4 }}
     app.kubernetes.io/component: django
 data:
+  PYTHONBUFFERED: "1"
   {{- with .Values.django.gunicornCmdArgs }}
   GUNICORN_CMD_ARGS: {{ . | quote }}
   {{- end }}
-  PYTHONBUFFERED: "1"
+  DOMAIN_NAME: {{ default "127.0.0.1" .Values.ingress.django.host }}
+  DOMAIN_SUBDIRECTORY: {{ trimPrefix "/" .Values.django.urlPath }}
   DJANGO_DEBUG: {{ .Values.django.debug | quote }}
+  DJANGO_SETTINGS_MODULE: config.settings.production
+  DJANGO_SECRET_KEY: {{ default (randAlphaNum 32) .Values.django.secretKey }}
   DJANGO_ADMIN_URL: {{ .Values.django.adminUrl }}
   DJANGO_ALLOWED_HOSTS: {{ include "metagrid.djangoAllowedHosts" . | quote }}
   DJANGO_SECURE_SSL_REDIRECT: "False"
-  DJANGO_SETTINGS_MODULE: config.settings.production
-  DJANGO_LOGIN_REDIRECT_URL: {{ include "metagrid.django.loginRedirect" . | quote }}
-  DJANGO_LOGOUT_REDIRECT_URL: {{ include "metagrid.django.logoutRedirect" . | quote }}
-  GLOBUS_CLIENT_KEY: {{ .Values.globus.clientID }}
-  DOMAIN_NAME: {{ default "127.0.0.1" .Values.ingress.django.host }}
-  DOMAIN_SUBDIRECTORY: {{ trimPrefix "/" .Values.django.urlPath }}
   CORS_ALLOWED_ORIGINS: {{ include "metagrid.django.corsOriginWhitelist" . }}
   # CORS_ORIGIN_WHITELIST: {{ include "metagrid.django.corsOriginWhitelist" . }}
-  {{- if eq .Values.authType "globus" }}
+  KEYCLOAK_URL: {{ .Values.keyCloak.url }}
+  KEYCLOAK_REALM: {{ .Values.keyCloak.realm }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.keyCloak.clientID }}
+  DJANGO_LOGIN_REDIRECT_URL: {{ include "metagrid.django.loginRedirect" . | quote }}
+  DJANGO_LOGOUT_REDIRECT_URL: {{ include "metagrid.django.logoutRedirect" . | quote }}
   GLOBUS_CLIENT_KEY: {{ .Values.globus.backend.clientID }}
-  {{- end }}
-  KEYCLOAK_URL: {{ default "" .Values.keyCloak.url }}
-  KEYCLOAK_REALM: {{ default "" .Values.keyCloak.realm }}
-  KEYCLOAK_CLIENT_ID: {{ default "" .Values.keyCloak.clientID }}
+  GLOBUS_CLIENT_SECRET: {{ .Values.globus.backend.clientSecret }}
+  # Required by api_proxy
   REACT_APP_WGET_API_URL: {{ .Values.wgetApiUrl }}
   REACT_APP_SEARCH_URL: {{ .Values.searchUrl }}
   REACT_APP_ESGF_NODE_STATUS_URL: {{ .Values.esgfNodeStatusUrl }}

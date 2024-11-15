@@ -8,11 +8,10 @@ metadata:
     {{- with .Values.react.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+  {{- with .Values.react.annotations }}
   annotations:
-    checksum/config: {{ include (print $.Template.BasePath "/react/configmap.yaml") . | sha256sum }}
-    {{- with .Values.react.annotations }}
     {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
 spec:
   {{- if not .Values.react.autoscaling.enabled }}
   replicas: {{ .Values.react.replicaCount }}
@@ -23,8 +22,9 @@ spec:
       app.kubernetes.io/component: react
   template:
     metadata:
-      {{- with .Values.react.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/react/configmap.yaml") . | sha256sum }}
+      {{- with .Values.react.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

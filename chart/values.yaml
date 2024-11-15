@@ -5,11 +5,11 @@ globus:
   redirect: https://localhost:3000/cart/items
   # -- Client ID for a globus thick client, the redirect will need to be the url of the frontend e.g. https://metagrid.io/metagrid
   frontend:
-    clientID:
+    clientID: client_id
   # -- Client ID/Secret for globus portal, the redirect will need to be the url of the backend e.g. https://metagrid.io/metagrid-backend/complete/globus/
   backend:
-    clientID:
-    clientSecret:
+    clientID: client_id
+    clientSecret: client_secret
   nodes:
     - aims3.llnl.gov
     - esgf-data1.llnl.gov
@@ -17,11 +17,11 @@ globus:
 
 keyCloak:
   # -- Keycloak service url
-  url:
+  url: http://127.0.0.1:8080
   # -- Client realm
-  realm:
+  realm: metagrid
   # -- Client ID
-  clientID:
+  clientID: client_id
 
 # -- ESGF wget service url
 wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
@@ -69,7 +69,7 @@ react:
   googleAnalyticsID:
 
   # -- Custom url for external metagrid backend
-  backendUrl: http://127.0.0.1:5000
+  backendUrl:
 
   # -- Frontend path prefix
   urlPath: /metagrid

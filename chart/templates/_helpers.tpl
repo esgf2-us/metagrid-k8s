@@ -122,8 +122,12 @@ Django base url
 Django Url
 */}}
 {{- define "metagrid.django.url" -}}
+{{- if .Values.react.backendUrl }}
+{{- printf "%s" .Values.react.backendUrl }}
+{{- else }}
 {{- $baseUrl := include "metagrid.django.baseUrl" . }}
 {{- printf "%s%s" $baseUrl (printf "/%s" (trimPrefix "/" .Values.django.urlPath)) }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -146,23 +150,39 @@ Django logout url
 Django login redirect
 */}}
 {{- define "metagrid.django.loginRedirect" -}}
-{{- $baseUrl := include "metagrid.react.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.loginRedirect) }}
+{{- $path := "" }}
+{{- with .Values.django.loginRedirect }}
+{{- $path = printf "/%s" (trimPrefix "/" .) }}
+{{- end }}
+{{- printf "%s%s" (include "metagrid.react.url" .) $path }}
 {{- end }}
 
 {{/*
 Django logout redirect
 */}}
 {{- define "metagrid.django.logoutRedirect" -}}
-{{- $baseUrl := include "metagrid.react.url" . }}
-{{- printf "%s/%s" $baseUrl (trimPrefix "/" .Values.django.logoutRedirect) }}
+{{- $path := "" }}
+{{- with .Values.django.logoutRedirect }}
+{{- $path = printf "/%s" (trimPrefix "/" .) }}
+{{- end }}
+{{- printf "%s%s" (include "metagrid.react.url" .) $path }}
 {{- end }}
 
 {{/*
 Django ALLOWED_HOSTS
 */}}
 {{- define "metagrid.djangoAllowedHosts" -}}
-{{- join "," (list "127.0.0.1" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) .Values.ingress.react.host ) -}}
+{{- $allowed_hosts := list "127.0.0.1" "localhost" (printf "%s-django" (include "metagrid.fullname" .)) }}
+
+{{- if and .Values.ingress.enabled .Values.ingress.react.host }}
+{{- $allowed_hosts = append $allowed_hosts .Values.ingress.react.host }}
+{{- end }}
+
+{{- if .Values.baseUrl }}
+{{- $allowed_hosts = append $allowed_hosts (last (regexSplit "/" .Values.baseUrl -1)) }}
+{{- end }}
+
+{{- join "," $allowed_hosts -}}
 {{- end }}
 
 {{/*
