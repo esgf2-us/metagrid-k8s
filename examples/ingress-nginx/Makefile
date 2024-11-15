@@ -9,4 +9,5 @@ delete:
 
 .PHONY: open
 open:
-	@echo https://$(shell minikube ip)/metagrid
+	@echo "Run:\n\techo '$(shell minikube ip) metagrid.minikube.io' >> /etc/hosts"
+	@echo "Visit:\n\t https://metagrid.minikube.io/metagrid/"
