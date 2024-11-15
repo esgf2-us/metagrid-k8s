@@ -2,7 +2,7 @@ apiVersion: v2
 name: metagrid
 description: A Helm chart for the Metagrid frontend/backend
 type: application
-version: 0.1.6
+version: 0.1.7
 appVersion: "1.2.0"
 home: https://github.com/esgf2-us/metagrid-k8s
 sources:
