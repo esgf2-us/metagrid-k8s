@@ -30,7 +30,7 @@ wgetApiUrl: https://esgf-node.llnl.gov/esg-search/wget
 searchUrl: https://esgf-node.llnl.gov/esg-search/search
 
 # -- ESGF node status url
-esgfNodeStatusUrl: https://aims4.llnl.gov/prometheus/api/v1/query?query=probe_success%7Bjob%3D%22http_2xx%22%2C+target%3D~%22.%2Athredds.%2A%22%7D
+esgfNodeStatusUrl: https://nimbus-dev.llnl.gov/metagrid-backend/proxy/status
 
 # -- (Deprecated) ESGF solr url
 solrUrl: https://esgf-node.llnl.gov/solr
