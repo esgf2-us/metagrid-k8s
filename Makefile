@@ -17,4 +17,10 @@ release: package upload index
 
 .PHONY: bump-%
 bump-%:
-	tbump --no-tag $(ARGS) $(shell python -m semver bump $* $(shell tbump current-version))
+	tbump --no-tag $(ARGS) $(shell python3 -m semver bump $* $(shell tbump current-version))
+
+.PHONY: venv
+venv:
+	@python3 -m venv metagrid-venv && \
+		. metagrid-venv/bin/activate && \
+		python3 -m pip install tbump semver
