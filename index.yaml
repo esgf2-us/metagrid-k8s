@@ -2,6 +2,28 @@ apiVersion: v1
 entries:
   metagrid:
   - apiVersion: v2
+    appVersion: 1.2.2
+    created: "2025-02-23T03:48:14.523044871Z"
+    dependencies:
+    - alias: postgresql
+      condition: postgresql.enabled
+      name: postgresql-ha
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=9.2.0'
+    description: A Helm chart for the Metagrid frontend/backend
+    digest: 6c3a68fe32b75ec1ea65f3814273561e994d8492f729137d167e5466b6073497
+    home: https://github.com/esgf2-us/metagrid-k8s
+    maintainers:
+    - email: boutte3@llnl.gov
+      name: Jason Boutte
+    name: metagrid
+    sources:
+    - https://github.com/aims-group/metagrid
+    type: application
+    urls:
+    - https://github.com/esgf2-us/metagrid-k8s/releases/download/metagrid-0.1.9/metagrid-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
     appVersion: 1.2.1
     created: "2024-11-21T08:13:52.449579265Z"
     dependencies:
@@ -187,4 +209,4 @@ entries:
     urls:
     - https://github.com/esgf2-us/metagrid-k8s/releases/download/metagrid-0.1.0/metagrid-0.1.0.tgz
     version: 0.1.0
-generated: "2024-11-21T08:13:52.449611005Z"
+generated: "2025-02-23T03:48:14.523070408Z"
